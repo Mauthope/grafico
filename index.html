@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverted Bar Chart with Average Line</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            max-width: 80%;
+            max-height: 80%;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myChart"></canvas>
+
+    <script>
+        // Gerar 60 valores de 0 a 60
+        const dataValues = Array.from({ length: 60 }, () => Math.floor(Math.random() * 61));
+
+        // Calcular médias de grupos de 3 barras
+        const averageData = [];
+        for (let i = 0; i < dataValues.length; i += 3) {
+            const avg = (dataValues[i] + (dataValues[i + 1] || 0) + (dataValues[i + 2] || 0)) / 3;
+            averageData.push(avg);
+        }
+
+        // Duplicar os valores da média para que correspondam aos 60 pontos no gráfico
+        const expandedAverageData = averageData.flatMap(avg => [avg, avg, avg]);
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dataValues.map((_, index) => `Bar ${index + 1}`),
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Values',
+                        data: dataValues,
+                        backgroundColor: '#4A90E2',
+                        borderSkipped: false,
+                    },
+                    {
+                        type: 'line',
+                        label: 'Average Line',
+                        data: expandedAverageData,
+                        borderColor: '#FF6F61',
+                        borderWidth: 2,
+                        fill: {
+                            target: 'origin', // Preenche a área até o eixo X
+                            above: 'rgba(255, 111, 97, 0.3)', // Cor do preenchimento acima da linha média
+                        },
+                        pointRadius: 0,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        reverse: true, // Inverte a ordem das barras
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+</body>
+</html>
