@@ -28,20 +28,23 @@
     // Parâmetros de controle
     const originX = canvas.width / 2;
     const originY = canvas.height / 2;
-    const radius1 = 120; // raio do ponto laranja
-    const radius2 = 200; // raio do ponto verde
+    const radius = [120, 160, 200, 240, 280]; // raís dos pontos
     const motorSpeed = 0.01; // velocidade de rotação do motor central
-    const rollingSpeed1 = 0.03; // velocidade do ponto laranja
-    const rollingSpeed2 = 0.05; // velocidade do ponto verde
+    const numPoints = 6; // número de pontos
+    const points = []; // array para armazenar pontos
 
-    let motorAngle = 0; // ângulo do motor central
-    let rollingAngle1 = 0; // ângulo do ponto laranja
-    let rollingAngle2 = Math.PI / 2; // ângulo do ponto verde (inicialmente deslocado a 90 graus)
+    // Inicializa os pontos com ângulos e velocidades aleatórias
+    for (let i = 0; i < numPoints; i++) {
+      points.push({
+        angle: Math.PI * 2 * (i / numPoints),
+        speed: 0.02 + Math.random() * 0.08, // velocidades variadas
+        radius: radius[i % radius.length], // seleciona um raio
+        trail: [] // histórico de rastros
+      });
+    }
 
     // Histórico de posições para rastro
     const trailLength = 200; // comprimento do rastro
-    const trail1 = [];
-    const trail2 = [];
 
     // Função para calcular um leve deslocamento
     function oscillate(angle, offset) {
@@ -53,75 +56,55 @@
       ctx.fillStyle = 'rgba(42, 42, 42, 0.8)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Calcula a posição dos pontos externos com um pequeno deslocamento dinâmico
-      const point1X = originX + (radius1 + oscillate(motorAngle, 0)) * Math.cos(rollingAngle1);
-      const point1Y = originY + (radius1 + oscillate(motorAngle, 0)) * Math.sin(rollingAngle1);
-      const point2X = originX + (radius2 + oscillate(motorAngle, Math.PI)) * Math.cos(rollingAngle2);
-      const point2Y = originY + (radius2 + oscillate(motorAngle, Math.PI)) * Math.sin(rollingAngle2);
+      // Desenha os pontos
+      for (let i = 0; i < points.length; i++) {
+        const point = points[i];
 
-      // Salva as posições para o rastro
-      trail1.push({ x: point1X, y: point1Y });
-      trail2.push({ x: point2X, y: point2Y });
+        // Calcula a posição do ponto com um pequeno deslocamento dinâmico
+        const pointX = originX + (point.radius + oscillate(point.angle, Math.PI)) * Math.cos(point.angle);
+        const pointY = originY + (point.radius + oscillate(point.angle, Math.PI)) * Math.sin(point.angle);
 
-      // Limita o tamanho dos rastros
-      if (trail1.length > trailLength) trail1.shift();
-      if (trail2.length > trailLength) trail2.shift();
+        // Salva as posições para o rastro
+        point.trail.push({ x: pointX, y: pointY });
 
-      // Desenha os rastros com opacidade para dar efeito de desvanecimento
-      ctx.strokeStyle = '#ff7700'; // cor do rastro do ponto laranja
-      ctx.lineWidth = 2;
-      for (let i = 0; i < trail1.length - 1; i++) {
-        const opacity = i / trail1.length; // define a opacidade para o fade
-        ctx.strokeStyle = `rgba(255, 119, 0, ${opacity})`;
+        // Limita o tamanho dos rastros
+        if (point.trail.length > trailLength) point.trail.shift();
+
+        // Desenha os rastros com opacidade para dar efeito de desvanecimento
+        ctx.strokeStyle = `rgba(255, 119, 0, ${i / numPoints})`; // cor do rastro
+        ctx.lineWidth = 2;
+        for (let j = 0; j < point.trail.length - 1; j++) {
+          const opacity = j / point.trail.length; // define a opacidade para o fade
+          ctx.strokeStyle = `rgba(255, 119, 0, ${opacity})`;
+          ctx.beginPath();
+          ctx.moveTo(point.trail[j].x, point.trail[j].y);
+          ctx.lineTo(point.trail[j + 1].x, point.trail[j + 1].y);
+          ctx.stroke();
+        }
+
+        // Desenha o ponto
         ctx.beginPath();
-        ctx.moveTo(trail1[i].x, trail1[i].y);
-        ctx.lineTo(trail1[i + 1].x, trail1[i + 1].y);
-        ctx.stroke();
+        ctx.arc(pointX, pointY, 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff7700'; // cor do ponto
+        ctx.fill();
+
+        // Atualiza o ângulo para criar movimento contínuo e dinâmico
+        point.angle += point.speed; // movimenta o ponto
       }
 
-      ctx.strokeStyle = '#00cc44'; // cor do rastro do ponto verde
-      for (let i = 0; i < trail2.length - 1; i++) {
-        const opacity = i / trail2.length; // define a opacidade para o fade
-        ctx.strokeStyle = `rgba(0, 204, 68, ${opacity})`;
-        ctx.beginPath();
-        ctx.moveTo(trail2[i].x, trail2[i].y);
-        ctx.lineTo(trail2[i + 1].x, trail2[i + 1].y);
-        ctx.stroke();
-      }
-
-      // Desenha a linha entre o motor e os pontos
-      const motorX = originX + 20 * Math.cos(motorAngle);
-      const motorY = originY + 20 * Math.sin(motorAngle);
-
-      ctx.beginPath();
-      ctx.moveTo(motorX, motorY);
-      ctx.lineTo(point1X, point1Y);
-      ctx.lineTo(point2X, point2Y);
+      // Desenha a linha entre os pontos
       ctx.strokeStyle = '#fff'; // cor da linha central
       ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        const pointX = originX + (point.radius + oscillate(point.angle, Math.PI)) * Math.cos(point.angle);
+        const pointY = originY + (point.radius + oscillate(point.angle, Math.PI)) * Math.sin(point.angle);
+        ctx.lineTo(pointX, pointY);
+      }
+      ctx.closePath();
       ctx.stroke();
-
-      // Desenha o ponto central "motor"
-      ctx.beginPath();
-      ctx.arc(motorX, motorY, 10, 0, Math.PI * 2);
-      ctx.fillStyle = '#0077ff'; // cor do motor
-      ctx.fill();
-
-      // Desenha os pontos externos
-      ctx.beginPath();
-      ctx.arc(point1X, point1Y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = '#ff7700'; // cor do ponto laranja
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(point2X, point2Y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = '#00cc44'; // cor do ponto verde
-      ctx.fill();
-
-      // Atualiza os ângulos para criar movimento contínuo e dinâmico
-      motorAngle += motorSpeed; // motor gira ao redor de seu próprio eixo
-      rollingAngle1 += rollingSpeed1 + oscillate(motorAngle, Math.PI / 4) * 0.001; // ponto laranja
-      rollingAngle2 += rollingSpeed2 + oscillate(motorAngle, -Math.PI / 4) * 0.001; // ponto verde
 
       // Continuar animação
       requestAnimationFrame(draw);
