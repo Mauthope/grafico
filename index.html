@@ -1,90 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inverted Bar Chart with Average Line</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-        }
-        canvas {
-            max-width: 80%;
-            max-height: 80%;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulação de Movimentos Simétricos</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    canvas {
+      background-color: #ffffff;
+      border: 2px solid #333;
+    }
+  </style>
 </head>
 <body>
-    <canvas id="myChart"></canvas>
+  <canvas id="canvas" width="500" height="500"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-    <script>
-        // Gerar 60 valores de 0 a 60
-        const dataValues = Array.from({ length: 60 }, () => Math.floor(Math.random() * 61));
+    // Parâmetros de controle
+    let angle = 0; 
+    const speed = 0.01; // velocidade de rotação
+    const radius = 100; // raio da trajetória
+    const points = []; // lista de pontos adicionados
 
-        // Calcular médias de grupos de 3 barras
-        const averageData = [];
-        for (let i = 0; i < dataValues.length; i += 3) {
-            const avg = (dataValues[i] + (dataValues[i + 1] || 0) + (dataValues[i + 2] || 0)) / 3;
-            averageData.push(avg);
-        }
+    // Função para desenhar o eixo central
+    function drawAxis() {
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2, 0);
+      ctx.lineTo(canvas.width / 2, canvas.height);
+      ctx.strokeStyle = '#aaa';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
 
-        // Duplicar os valores da média para que correspondam aos 60 pontos no gráfico
-        const expandedAverageData = averageData.flatMap(avg => [avg, avg, avg]);
+    // Função para desenhar pontos e animar
+    function drawPoints() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // limpar canvas
+      drawAxis();
 
-        const ctx = document.getElementById('myChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: dataValues.map((_, index) => `Bar ${index + 1}`),
-                datasets: [
-                    {
-                        type: 'bar',
-                        label: 'Values',
-                        data: dataValues,
-                        backgroundColor: '#4A90E2',
-                        borderSkipped: false,
-                    },
-                    {
-                        type: 'line',
-                        label: 'Average Line',
-                        data: expandedAverageData,
-                        borderColor: '#FF6F61',
-                        borderWidth: 2,
-                        fill: {
-                            target: 'origin', // Preenche a área até o eixo X
-                            above: 'rgba(255, 111, 97, 0.3)', // Cor do preenchimento acima da linha média
-                        },
-                        pointRadius: 0,
-                        tension: 0.3
-                    }
-                ]
-            },
-            options: {
-                scales: {
-                    x: {
-                        reverse: true, // Inverte a ordem das barras
-                    },
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    </script>
+      // Atualiza e desenha cada ponto
+      points.forEach(point => {
+        point.angle += speed; // incrementa o ângulo
+        const x = point.cx + radius * Math.cos(point.angle);
+        const y = point.cy + radius * Math.sin(point.angle);
+
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2); // desenha ponto
+        ctx.fillStyle = point.color;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(drawPoints); // animação contínua
+    }
+
+    // Função para adicionar um ponto no canvas
+    canvas.addEventListener('click', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      const color = '#' + Math.floor(Math.random() * 16777215).toString(16); // cor aleatória
+      points.push({ cx, cy, angle: 0, color });
+
+      if (points.length === 1) drawPoints(); // iniciar animação se for o primeiro ponto
+    });
+
+    // Inicia o desenho do eixo central
+    drawAxis();
+  </script>
 </body>
 </html>
