@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulação de Movimentos com Rastro e Entropia</title>
+  <title>Simulação de Pêndulo com Dois Pontos Interligados</title>
   <style>
     body {
       display: flex;
@@ -26,57 +26,55 @@
     const ctx = canvas.getContext('2d');
 
     // Parâmetros de controle
-    const points = []; // lista de pontos adicionados
+    const originX = canvas.width / 2;
+    const originY = 100;
+    const length = 200; // comprimento do "braço" do pêndulo
+    const gravity = 0.001; // força da gravidade (constante)
 
-    // Função para desenhar o eixo central
-    function drawAxis() {
+    let angle = Math.PI / 4; // ângulo inicial do pêndulo (45 graus)
+    let angleVelocity = 0; // velocidade inicial do ângulo
+    let angleAcceleration = 0; // aceleração angular
+
+    // Função para desenhar o pêndulo com dois pontos interligados
+    function drawPendulum() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Calcula a posição dos dois pontos
+      const point1X = originX + length * Math.sin(angle);
+      const point1Y = originY + length * Math.cos(angle);
+      const point2X = originX + length * 1.5 * Math.sin(angle + 0.5); // segundo ponto levemente deslocado
+      const point2Y = originY + length * 1.5 * Math.cos(angle + 0.5);
+
+      // Atualiza o movimento do pêndulo com gravidade
+      angleAcceleration = -gravity * Math.sin(angle); // gravidade afeta a aceleração angular
+      angleVelocity += angleAcceleration; // atualiza a velocidade
+      angleVelocity *= 0.99; // fator de amortecimento para suavizar o movimento
+      angle += angleVelocity; // atualiza o ângulo
+
+      // Desenha a linha entre os dois pontos
       ctx.beginPath();
-      ctx.moveTo(canvas.width / 2, 0);
-      ctx.lineTo(canvas.width / 2, canvas.height);
-      ctx.strokeStyle = '#aaa';
-      ctx.lineWidth = 1;
+      ctx.moveTo(originX, originY);
+      ctx.lineTo(point1X, point1Y);
+      ctx.lineTo(point2X, point2Y);
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
       ctx.stroke();
+
+      // Desenha os pontos
+      ctx.beginPath();
+      ctx.arc(point1X, point1Y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#0077ff';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(point2X, point2Y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff7700';
+      ctx.fill();
+
+      requestAnimationFrame(drawPendulum);
     }
 
-    // Função para desenhar pontos e animar com rastro e entropia
-    function drawPoints() {
-      drawAxis(); // redesenha o eixo se desejar mantê-lo visível
-
-      // Atualiza e desenha cada ponto com entropia
-      points.forEach(point => {
-        point.angle += point.speed; // incrementa o ângulo com velocidade específica
-        const x = point.cx + point.radius * Math.cos(point.angle);
-        const y = point.cy + point.radius * Math.sin(point.angle);
-
-        // Desenha o ponto
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = point.color;
-        ctx.fill();
-      });
-
-      requestAnimationFrame(drawPoints); // animação contínua
-    }
-
-    // Função para adicionar um ponto no canvas com entropia
-    canvas.addEventListener('click', (event) => {
-      const rect = canvas.getBoundingClientRect();
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-
-      const color = '#' + Math.floor(Math.random() * 16777215).toString(16); // cor aleatória
-
-      // Adiciona entropia: raio e velocidade são ligeiramente variados
-      const radius = 80 + Math.random() * 70; // raio entre 80 e 150 pixels
-      const speed = 0.005 + Math.random() * 0.02; // velocidade entre 0.005 e 0.025
-
-      points.push({ cx, cy, angle: 0, color, radius, speed });
-
-      if (points.length === 1) drawPoints(); // iniciar animação se for o primeiro ponto
-    });
-
-    // Inicia o desenho do eixo central
-    drawAxis();
+    drawPendulum();
   </script>
 </body>
 </html>
