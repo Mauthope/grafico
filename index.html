@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulação de Movimentos Simétricos</title>
+  <title>Simulação de Movimentos com Rastro</title>
   <style>
     body {
       display: flex;
@@ -41,10 +41,11 @@
       ctx.stroke();
     }
 
-    // Função para desenhar pontos e animar
+    // Função para desenhar pontos e animar com rastro
     function drawPoints() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // limpar canvas
-      drawAxis();
+      // Não limpar o canvas para manter o rastro
+
+      drawAxis(); // redesenha o eixo se desejar mantê-lo visível
 
       // Atualiza e desenha cada ponto
       points.forEach(point => {
@@ -52,8 +53,9 @@
         const x = point.cx + radius * Math.cos(point.angle);
         const y = point.cy + radius * Math.sin(point.angle);
 
+        // Desenha o ponto
         ctx.beginPath();
-        ctx.arc(x, y, 5, 0, Math.PI * 2); // desenha ponto
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
         ctx.fillStyle = point.color;
         ctx.fill();
       });
