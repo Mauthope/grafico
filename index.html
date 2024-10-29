@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulação com Movimento Dinâmico</title>
+  <title>Simulação com Movimento de Órbita Circular</title>
   <style>
     body {
       display: flex;
@@ -28,36 +28,31 @@
     // Parâmetros de controle
     const originX = canvas.width / 2;
     const originY = canvas.height / 2;
-    const radius1 = 120; // raio inicial do ponto laranja
-    const radius2 = 200; // raio inicial do ponto verde
-    const motorSpeed = 0.01; // velocidade de rotação do motor central
-    const rollingSpeed1 = 0.03; // velocidade do ponto laranja
-    const rollingSpeed2 = 0.05; // velocidade do ponto verde (aumentada)
+    const radius1 = 120; // raio do ponto laranja em relação ao ponto central
+    const radius2 = 50; // raio do ponto verde em relação ao ponto laranja
+    const motorSpeed = 0.01; // velocidade de rotação do ponto laranja em torno do centro
+    const orbitSpeed = 0.08; // velocidade de órbita do ponto verde em torno do ponto laranja
 
-    let motorAngle = 0; // ângulo do motor central
-    let rollingAngle1 = 0; // ângulo do ponto laranja
-    let rollingAngle2 = Math.PI / 2; // ângulo do ponto verde (inicialmente deslocado a 90 graus)
+    let motorAngle = 0; // ângulo do ponto laranja em torno do ponto central
+    let orbitAngle = 0; // ângulo do ponto verde em torno do ponto laranja
 
     // Histórico de posições para rastro
     const trailLength = 50; // comprimento do rastro
     const trail1 = [];
     const trail2 = [];
 
-    // Função para calcular um leve deslocamento influenciado pela "suspensão" dos pontos
-    function oscillate(angle, offset) {
-      return Math.sin(angle * 2 + offset) * 10;
-    }
-
     function draw() {
       // Aplica uma leve opacidade ao fundo para criar efeito de rastro
       ctx.fillStyle = 'rgba(240, 240, 240, 0.1)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Calcula a posição dos pontos externos com um pequeno deslocamento dinâmico
-      const point1X = originX + (radius1 + oscillate(motorAngle, 0)) * Math.cos(rollingAngle1);
-      const point1Y = originY + (radius1 + oscillate(motorAngle, 0)) * Math.sin(rollingAngle1);
-      const point2X = originX + (radius2 + oscillate(motorAngle, Math.PI)) * Math.cos(rollingAngle2);
-      const point2Y = originY + (radius2 + oscillate(motorAngle, Math.PI)) * Math.sin(rollingAngle2);
+      // Calcula a posição do ponto laranja
+      const point1X = originX + radius1 * Math.cos(motorAngle);
+      const point1Y = originY + radius1 * Math.sin(motorAngle);
+
+      // Calcula a posição do ponto verde (órbita ao redor do ponto laranja)
+      const point2X = point1X + radius2 * Math.cos(orbitAngle);
+      const point2Y = point1Y + radius2 * Math.sin(orbitAngle);
 
       // Salva as posições para o rastro
       trail1.push({ x: point1X, y: point1Y });
@@ -90,8 +85,8 @@
       }
 
       // Desenha a linha entre o motor e os pontos
-      const motorX = originX + 20 * Math.cos(motorAngle);
-      const motorY = originY + 20 * Math.sin(motorAngle);
+      const motorX = originX;
+      const motorY = originY;
 
       ctx.beginPath();
       ctx.moveTo(motorX, motorY);
@@ -107,21 +102,21 @@
       ctx.fillStyle = '#0077ff';
       ctx.fill();
 
-      // Desenha os pontos externos com um leve efeito dinâmico
+      // Desenha o ponto laranja
       ctx.beginPath();
       ctx.arc(point1X, point1Y, 8, 0, Math.PI * 2);
       ctx.fillStyle = '#ff7700';
       ctx.fill();
 
+      // Desenha o ponto verde (orbita ao redor do ponto laranja)
       ctx.beginPath();
       ctx.arc(point2X, point2Y, 8, 0, Math.PI * 2);
       ctx.fillStyle = '#00cc44';
       ctx.fill();
 
-      // Atualiza os ângulos para criar movimento contínuo e dinâmico
-      motorAngle += motorSpeed; // motor gira ao redor de seu próprio eixo
-      rollingAngle1 += rollingSpeed1 + oscillate(motorAngle, Math.PI / 4) * 0.001; // ponto laranja com velocidade base
-      rollingAngle2 += rollingSpeed2 + oscillate(motorAngle, -Math.PI / 4) * 0.001; // ponto verde com velocidade aumentada
+      // Atualiza os ângulos para criar movimento contínuo
+      motorAngle += motorSpeed; // ponto laranja gira ao redor do centro
+      orbitAngle += orbitSpeed; // ponto verde orbita ao redor do ponto laranja
 
       // Continuar animação
       requestAnimationFrame(draw);
