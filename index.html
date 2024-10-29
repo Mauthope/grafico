@@ -44,7 +44,7 @@
     }
 
     // Histórico de posições para rastro
-    const trailLength = 900; // comprimento do rastro
+    const trailLength = 700; // comprimento do rastro
 
     // Função para calcular um leve deslocamento
     function oscillate(angle, offset) {
@@ -75,7 +75,7 @@
         ctx.lineWidth = 2;
         for (let j = 0; j < point.trail.length - 1; j++) {
           const opacity = j / point.trail.length; // define a opacidade para o fade
-          ctx.strokeStyle = `rgba(255, 119, 0, ${opacity * 0.6})`; // ajusta a opacidade
+          ctx.strokeStyle = `rgba(255, 119, 0, ${opacity * 0.3})`; // ajusta a opacidade
           ctx.beginPath();
           ctx.moveTo(point.trail[j].x, point.trail[j].y);
           ctx.lineTo(point.trail[j + 1].x, point.trail[j + 1].y);
