@@ -28,23 +28,23 @@
     // Parâmetros de controle
     const originX = canvas.width / 2;
     const originY = canvas.height / 2;
-    const radius = [120, 160, 200, 240, 280]; // raís dos pontos
+    const radius = [120, 160, 200, 240, 280]; // raios dos pontos
     const motorSpeed = 0.01; // velocidade de rotação do motor central
-    const numPoints = 6; // número de pontos
+    const numPoints = 8; // número de pontos
     const points = []; // array para armazenar pontos
 
     // Inicializa os pontos com ângulos e velocidades aleatórias
     for (let i = 0; i < numPoints; i++) {
       points.push({
         angle: Math.PI * 2 * (i / numPoints),
-        speed: 0.02 + Math.random() * 0.08, // velocidades variadas
+        speed: 0.005 + Math.random() * 0.02, // velocidades variadas, reduzidas
         radius: radius[i % radius.length], // seleciona um raio
         trail: [] // histórico de rastros
       });
     }
 
     // Histórico de posições para rastro
-    const trailLength = 200; // comprimento do rastro
+    const trailLength = 300; // comprimento do rastro
 
     // Função para calcular um leve deslocamento
     function oscillate(angle, offset) {
@@ -71,11 +71,11 @@
         if (point.trail.length > trailLength) point.trail.shift();
 
         // Desenha os rastros com opacidade para dar efeito de desvanecimento
-        ctx.strokeStyle = `rgba(255, 119, 0, ${i / numPoints})`; // cor do rastro
+        ctx.strokeStyle = `rgba(255, 119, 0, 0.5)`; // cor do rastro
         ctx.lineWidth = 2;
         for (let j = 0; j < point.trail.length - 1; j++) {
           const opacity = j / point.trail.length; // define a opacidade para o fade
-          ctx.strokeStyle = `rgba(255, 119, 0, ${opacity})`;
+          ctx.strokeStyle = `rgba(255, 119, 0, ${opacity * 0.6})`; // ajusta a opacidade
           ctx.beginPath();
           ctx.moveTo(point.trail[j].x, point.trail[j].y);
           ctx.lineTo(point.trail[j + 1].x, point.trail[j + 1].y);
