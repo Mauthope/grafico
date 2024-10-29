@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulação com Movimento de Órbita Circular</title>
+  <title>Simulação com Trajetória Dinâmica</title>
   <style>
     body {
       display: flex;
@@ -29,17 +29,19 @@
     const originX = canvas.width / 2;
     const originY = canvas.height / 2;
     const radius1 = 120; // raio do ponto laranja em relação ao ponto central
-    const radius2 = 50; // raio do ponto verde em relação ao ponto laranja
     const motorSpeed = 0.01; // velocidade de rotação do ponto laranja em torno do centro
-    const orbitSpeed = 0.08; // velocidade de órbita do ponto verde em torno do ponto laranja
+    const greenAttractionStrength = 0.05; // força de atração entre o ponto verde e o ponto laranja
 
     let motorAngle = 0; // ângulo do ponto laranja em torno do ponto central
-    let orbitAngle = 0; // ângulo do ponto verde em torno do ponto laranja
+
+    // Posições iniciais do ponto verde
+    let point2X = originX + radius1 + 50; // posição inicial do ponto verde (solto)
+    let point2Y = originY + radius1 + 50;
 
     // Histórico de posições para rastro
-    const trailLength = 50; // comprimento do rastro
     const trail1 = [];
     const trail2 = [];
+    const trailLength = 50; // comprimento do rastro
 
     function draw() {
       // Aplica uma leve opacidade ao fundo para criar efeito de rastro
@@ -50,9 +52,11 @@
       const point1X = originX + radius1 * Math.cos(motorAngle);
       const point1Y = originY + radius1 * Math.sin(motorAngle);
 
-      // Calcula a posição do ponto verde (órbita ao redor do ponto laranja)
-      const point2X = point1X + radius2 * Math.cos(orbitAngle);
-      const point2Y = point1Y + radius2 * Math.sin(orbitAngle);
+      // Aplica uma atração para o ponto verde se mover em direção ao ponto laranja com suavidade
+      const dx = point1X - point2X;
+      const dy = point1Y - point2Y;
+      point2X += dx * greenAttractionStrength;
+      point2Y += dy * greenAttractionStrength;
 
       // Salva as posições para o rastro
       trail1.push({ x: point1X, y: point1Y });
@@ -108,15 +112,14 @@
       ctx.fillStyle = '#ff7700';
       ctx.fill();
 
-      // Desenha o ponto verde (orbita ao redor do ponto laranja)
+      // Desenha o ponto verde (movimento livre ao redor do ponto laranja)
       ctx.beginPath();
       ctx.arc(point2X, point2Y, 8, 0, Math.PI * 2);
       ctx.fillStyle = '#00cc44';
       ctx.fill();
 
       // Atualiza os ângulos para criar movimento contínuo
-      motorAngle += motorSpeed; // ponto laranja gira ao redor do centro
-      orbitAngle += orbitSpeed; // ponto verde orbita ao redor do ponto laranja
+      motorAngle += motorSpeed;
 
       // Continuar animação
       requestAnimationFrame(draw);
