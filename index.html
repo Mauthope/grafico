@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulação com Movimento de Órbita Circular</title>
+  <title>Simulação de Mandala com Movimento Dinâmico</title>
   <style>
     body {
       display: flex;
@@ -11,11 +11,10 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      background-color: #000; /* Fundo escuro simulando o espaço sideral */
-      color: #fff;
+      background-color: #1e1e1e; /* Fundo escuro */
     }
     canvas {
-      background-color: rgba(30, 30, 30, 0.8);
+      background-color: #2a2a2a; /* Cor do canvas */
       border: 2px solid #fff;
     }
   </style>
@@ -29,30 +28,36 @@
     // Parâmetros de controle
     const originX = canvas.width / 2;
     const originY = canvas.height / 2;
-    const radius1 = 120; // Raio do ponto laranja em relação ao ponto central
-    const motorSpeed = 0.01; // Velocidade de rotação do ponto laranja em torno do centro
+    const radius1 = 120; // raio do ponto laranja
+    const radius2 = 200; // raio do ponto verde
+    const motorSpeed = 0.01; // velocidade de rotação do motor central
+    const rollingSpeed1 = 0.03; // velocidade do ponto laranja
+    const rollingSpeed2 = 0.05; // velocidade do ponto verde
 
-    let motorAngle = 0; // Ângulo do ponto laranja em torno do ponto central
-    let orbitAngle = 0; // Ângulo do ponto verde em torno do ponto laranja
+    let motorAngle = 0; // ângulo do motor central
+    let rollingAngle1 = 0; // ângulo do ponto laranja
+    let rollingAngle2 = Math.PI / 2; // ângulo do ponto verde (inicialmente deslocado a 90 graus)
 
     // Histórico de posições para rastro
-    const trailLength = 50; // Comprimento do rastro
+    const trailLength = 200; // comprimento do rastro
     const trail1 = [];
     const trail2 = [];
 
+    // Função para calcular um leve deslocamento
+    function oscillate(angle, offset) {
+      return Math.sin(angle * 2 + offset) * 10;
+    }
+
     function draw() {
       // Aplica uma leve opacidade ao fundo para criar efeito de rastro
-      ctx.fillStyle = 'rgba(30, 30, 30, 0.2)';
+      ctx.fillStyle = 'rgba(42, 42, 42, 0.8)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Calcula a posição do ponto laranja
-      const point1X = originX + radius1 * Math.cos(motorAngle);
-      const point1Y = originY + radius1 * Math.sin(motorAngle);
-
-      // Aumenta a aleatoriedade do comprimento da linha
-      const variableLength = 30 + Math.random() * 20; // Comprimento variável da linha
-      const point2X = point1X + variableLength * Math.cos(orbitAngle);
-      const point2Y = point1Y + variableLength * Math.sin(orbitAngle);
+      // Calcula a posição dos pontos externos com um pequeno deslocamento dinâmico
+      const point1X = originX + (radius1 + oscillate(motorAngle, 0)) * Math.cos(rollingAngle1);
+      const point1Y = originY + (radius1 + oscillate(motorAngle, 0)) * Math.sin(rollingAngle1);
+      const point2X = originX + (radius2 + oscillate(motorAngle, Math.PI)) * Math.cos(rollingAngle2);
+      const point2Y = originY + (radius2 + oscillate(motorAngle, Math.PI)) * Math.sin(rollingAngle2);
 
       // Salva as posições para o rastro
       trail1.push({ x: point1X, y: point1Y });
@@ -63,10 +68,10 @@
       if (trail2.length > trailLength) trail2.shift();
 
       // Desenha os rastros com opacidade para dar efeito de desvanecimento
-      ctx.strokeStyle = '#ff7700';
+      ctx.strokeStyle = '#ff7700'; // cor do rastro do ponto laranja
       ctx.lineWidth = 2;
       for (let i = 0; i < trail1.length - 1; i++) {
-        const opacity = i / trail1.length; // Define a opacidade para o fade
+        const opacity = i / trail1.length; // define a opacidade para o fade
         ctx.strokeStyle = `rgba(255, 119, 0, ${opacity})`;
         ctx.beginPath();
         ctx.moveTo(trail1[i].x, trail1[i].y);
@@ -74,9 +79,9 @@
         ctx.stroke();
       }
 
-      ctx.strokeStyle = '#00cc44';
+      ctx.strokeStyle = '#00cc44'; // cor do rastro do ponto verde
       for (let i = 0; i < trail2.length - 1; i++) {
-        const opacity = i / trail2.length; // Define a opacidade para o fade
+        const opacity = i / trail2.length; // define a opacidade para o fade
         ctx.strokeStyle = `rgba(0, 204, 68, ${opacity})`;
         ctx.beginPath();
         ctx.moveTo(trail2[i].x, trail2[i].y);
@@ -85,38 +90,38 @@
       }
 
       // Desenha a linha entre o motor e os pontos
-      const motorX = originX;
-      const motorY = originY;
+      const motorX = originX + 20 * Math.cos(motorAngle);
+      const motorY = originY + 20 * Math.sin(motorAngle);
 
       ctx.beginPath();
       ctx.moveTo(motorX, motorY);
       ctx.lineTo(point1X, point1Y);
       ctx.lineTo(point2X, point2Y);
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#fff'; // cor da linha central
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
       // Desenha o ponto central "motor"
       ctx.beginPath();
       ctx.arc(motorX, motorY, 10, 0, Math.PI * 2);
-      ctx.fillStyle = '#0077ff';
+      ctx.fillStyle = '#0077ff'; // cor do motor
       ctx.fill();
 
-      // Desenha o ponto laranja
+      // Desenha os pontos externos
       ctx.beginPath();
       ctx.arc(point1X, point1Y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = '#ff7700';
+      ctx.fillStyle = '#ff7700'; // cor do ponto laranja
       ctx.fill();
 
-      // Desenha o ponto verde (orbita ao redor do ponto laranja)
       ctx.beginPath();
       ctx.arc(point2X, point2Y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = '#00cc44';
+      ctx.fillStyle = '#00cc44'; // cor do ponto verde
       ctx.fill();
 
-      // Atualiza os ângulos para criar movimento contínuo
-      motorAngle += motorSpeed; // Ponto laranja gira ao redor do centro
-      orbitAngle += 0.05; // Aumenta a velocidade do movimento do ponto verde
+      // Atualiza os ângulos para criar movimento contínuo e dinâmico
+      motorAngle += motorSpeed; // motor gira ao redor de seu próprio eixo
+      rollingAngle1 += rollingSpeed1 + oscillate(motorAngle, Math.PI / 4) * 0.001; // ponto laranja
+      rollingAngle2 += rollingSpeed2 + oscillate(motorAngle, -Math.PI / 4) * 0.001; // ponto verde
 
       // Continuar animação
       requestAnimationFrame(draw);
