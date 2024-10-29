@@ -31,7 +31,8 @@
     const radius1 = 120; // raio inicial do ponto laranja
     const radius2 = 200; // raio inicial do ponto verde
     const motorSpeed = 0.01; // velocidade de rotação do motor central
-    const rollingSpeed = 0.03; // velocidade de rotação dos rolamentos
+    const rollingSpeed1 = 0.03; // velocidade do ponto laranja
+    const rollingSpeed2 = 0.05; // velocidade do ponto verde (aumentada)
 
     let motorAngle = 0; // ângulo do motor central
     let rollingAngle1 = 0; // ângulo do ponto laranja
@@ -119,8 +120,8 @@
 
       // Atualiza os ângulos para criar movimento contínuo e dinâmico
       motorAngle += motorSpeed; // motor gira ao redor de seu próprio eixo
-      rollingAngle1 += rollingSpeed + oscillate(motorAngle, Math.PI / 4) * 0.001; // ponto laranja tem movimento dinâmico
-      rollingAngle2 += rollingSpeed + oscillate(motorAngle, -Math.PI / 4) * 0.001; // ponto verde influencia
+      rollingAngle1 += rollingSpeed1 + oscillate(motorAngle, Math.PI / 4) * 0.001; // ponto laranja com velocidade base
+      rollingAngle2 += rollingSpeed2 + oscillate(motorAngle, -Math.PI / 4) * 0.001; // ponto verde com velocidade aumentada
 
       // Continuar animação
       requestAnimationFrame(draw);
