@@ -30,14 +30,15 @@
     const originY = canvas.height / 2;
     const radius = [120, 160, 200, 240, 280]; // raios dos pontos
     const motorSpeed = 0.01; // velocidade de rotação do motor central
-    const numPoints = 8; // número de pontos
+    const numPoints = 10; // número de pontos
     const points = []; // array para armazenar pontos
 
-    // Inicializa os pontos com ângulos e velocidades aleatórias
+    // Inicializa os pontos com ângulos e velocidades definidas para criar padrões geométricos
+    const speeds = [0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065]; // velocidades fixas
     for (let i = 0; i < numPoints; i++) {
       points.push({
         angle: Math.PI * 2 * (i / numPoints),
-        speed: 0.005 + Math.random() * 0.02, // velocidades variadas, reduzidas
+        speed: speeds[i % speeds.length], // seleciona uma velocidade
         radius: radius[i % radius.length], // seleciona um raio
         trail: [] // histórico de rastros
       });
@@ -46,9 +47,8 @@
     // Histórico de posições para rastro
     const trailLength = 300; // comprimento do rastro
 
-    // Função para calcular um leve deslocamento
-    function oscillate(angle, offset) {
-      return Math.sin(angle * 2 + offset) * 10;
+    function oscillate(angle) {
+      return Math.sin(angle * 2) * 5; // leve oscilação para adicionar um movimento dinâmico
     }
 
     function draw() {
@@ -60,9 +60,9 @@
       for (let i = 0; i < points.length; i++) {
         const point = points[i];
 
-        // Calcula a posição do ponto com um pequeno deslocamento dinâmico
-        const pointX = originX + (point.radius + oscillate(point.angle, Math.PI)) * Math.cos(point.angle);
-        const pointY = originY + (point.radius + oscillate(point.angle, Math.PI)) * Math.sin(point.angle);
+        // Calcula a posição do ponto
+        const pointX = originX + (point.radius + oscillate(point.angle)) * Math.cos(point.angle);
+        const pointY = originY + (point.radius + oscillate(point.angle)) * Math.sin(point.angle);
 
         // Salva as posições para o rastro
         point.trail.push({ x: pointX, y: pointY });
@@ -88,7 +88,7 @@
         ctx.fillStyle = '#ff7700'; // cor do ponto
         ctx.fill();
 
-        // Atualiza o ângulo para criar movimento contínuo e dinâmico
+        // Atualiza o ângulo para criar movimento contínuo
         point.angle += point.speed; // movimenta o ponto
       }
 
@@ -99,8 +99,8 @@
       ctx.moveTo(points[0].x, points[0].y);
       for (let i = 0; i < points.length; i++) {
         const point = points[i];
-        const pointX = originX + (point.radius + oscillate(point.angle, Math.PI)) * Math.cos(point.angle);
-        const pointY = originY + (point.radius + oscillate(point.angle, Math.PI)) * Math.sin(point.angle);
+        const pointX = originX + (point.radius + oscillate(point.angle)) * Math.cos(point.angle);
+        const pointY = originY + (point.radius + oscillate(point.angle)) * Math.sin(point.angle);
         ctx.lineTo(pointX, pointY);
       }
       ctx.closePath();
