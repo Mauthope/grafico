@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulação de Movimentos com Rastro</title>
+  <title>Simulação de Movimentos com Rastro e Entropia</title>
   <style>
     body {
       display: flex;
@@ -26,9 +26,6 @@
     const ctx = canvas.getContext('2d');
 
     // Parâmetros de controle
-    let angle = 0; 
-    const speed = 0.01; // velocidade de rotação
-    const radius = 100; // raio da trajetória
     const points = []; // lista de pontos adicionados
 
     // Função para desenhar o eixo central
@@ -41,17 +38,15 @@
       ctx.stroke();
     }
 
-    // Função para desenhar pontos e animar com rastro
+    // Função para desenhar pontos e animar com rastro e entropia
     function drawPoints() {
-      // Não limpar o canvas para manter o rastro
-
       drawAxis(); // redesenha o eixo se desejar mantê-lo visível
 
-      // Atualiza e desenha cada ponto
+      // Atualiza e desenha cada ponto com entropia
       points.forEach(point => {
-        point.angle += speed; // incrementa o ângulo
-        const x = point.cx + radius * Math.cos(point.angle);
-        const y = point.cy + radius * Math.sin(point.angle);
+        point.angle += point.speed; // incrementa o ângulo com velocidade específica
+        const x = point.cx + point.radius * Math.cos(point.angle);
+        const y = point.cy + point.radius * Math.sin(point.angle);
 
         // Desenha o ponto
         ctx.beginPath();
@@ -63,14 +58,19 @@
       requestAnimationFrame(drawPoints); // animação contínua
     }
 
-    // Função para adicionar um ponto no canvas
+    // Função para adicionar um ponto no canvas com entropia
     canvas.addEventListener('click', (event) => {
       const rect = canvas.getBoundingClientRect();
       const cx = canvas.width / 2;
       const cy = canvas.height / 2;
 
       const color = '#' + Math.floor(Math.random() * 16777215).toString(16); // cor aleatória
-      points.push({ cx, cy, angle: 0, color });
+
+      // Adiciona entropia: raio e velocidade são ligeiramente variados
+      const radius = 80 + Math.random() * 70; // raio entre 80 e 150 pixels
+      const speed = 0.005 + Math.random() * 0.02; // velocidade entre 0.005 e 0.025
+
+      points.push({ cx, cy, angle: 0, color, radius, speed });
 
       if (points.length === 1) drawPoints(); // iniciar animação se for o primeiro ponto
     });
