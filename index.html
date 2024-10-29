@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulação de Pêndulo com Dois Pontos Interligados</title>
+  <title>Simulação de Rolamento com Motor Central</title>
   <style>
     body {
       display: flex;
@@ -20,61 +20,72 @@
   </style>
 </head>
 <body>
-  <canvas id="canvas" width="500" height="500"></canvas>
+  <canvas id="canvas" width="600" height="600"></canvas>
   <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
     // Parâmetros de controle
     const originX = canvas.width / 2;
-    const originY = 100;
-    const length = 200; // comprimento do "braço" do pêndulo
-    const gravity = 0.001; // força da gravidade (constante)
+    const originY = canvas.height / 2;
+    const radius1 = 120; // raio do ponto externo 1
+    const radius2 = 200; // raio do ponto externo 2
+    const motorSpeed = 0.03; // velocidade de rotação do motor central
+    const rollingSpeed = 0.1; // velocidade de rotação dos rolamentos
 
-    let angle = Math.PI / 4; // ângulo inicial do pêndulo (45 graus)
-    let angleVelocity = 0; // velocidade inicial do ângulo
-    let angleAcceleration = 0; // aceleração angular
+    let motorAngle = 0; // ângulo do motor central
+    let rollingAngle1 = 0; // ângulo do rolamento do ponto 1
+    let rollingAngle2 = Math.PI / 2; // ângulo do rolamento do ponto 2 (inicialmente a 90 graus de deslocamento)
 
-    // Função para desenhar o pêndulo com dois pontos interligados
-    function drawPendulum() {
+    function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Calcula a posição dos dois pontos
-      const point1X = originX + length * Math.sin(angle);
-      const point1Y = originY + length * Math.cos(angle);
-      const point2X = originX + length * 1.5 * Math.sin(angle + 0.5); // segundo ponto levemente deslocado
-      const point2Y = originY + length * 1.5 * Math.cos(angle + 0.5);
+      // Calcula a posição dos pontos externos
+      const point1X = originX + radius1 * Math.cos(rollingAngle1);
+      const point1Y = originY + radius1 * Math.sin(rollingAngle1);
+      const point2X = originX + radius2 * Math.cos(rollingAngle2);
+      const point2Y = originY + radius2 * Math.sin(rollingAngle2);
 
-      // Atualiza o movimento do pêndulo com gravidade
-      angleAcceleration = -gravity * Math.sin(angle); // gravidade afeta a aceleração angular
-      angleVelocity += angleAcceleration; // atualiza a velocidade
-      angleVelocity *= 0.99; // fator de amortecimento para suavizar o movimento
-      angle += angleVelocity; // atualiza o ângulo
+      // Calcula a posição do ponto central "motor"
+      const motorX = originX + 20 * Math.cos(motorAngle);
+      const motorY = originY + 20 * Math.sin(motorAngle);
 
-      // Desenha a linha entre os dois pontos
+      // Desenha a linha entre o motor e os pontos
       ctx.beginPath();
-      ctx.moveTo(originX, originY);
+      ctx.moveTo(motorX, motorY);
       ctx.lineTo(point1X, point1Y);
       ctx.lineTo(point2X, point2Y);
       ctx.strokeStyle = '#333';
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Desenha os pontos
+      // Desenha o ponto central "motor"
+      ctx.beginPath();
+      ctx.arc(motorX, motorY, 10, 0, Math.PI * 2);
+      ctx.fillStyle = '#0077ff';
+      ctx.fill();
+
+      // Desenha os pontos externos com rolamento
       ctx.beginPath();
       ctx.arc(point1X, point1Y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = '#0077ff';
+      ctx.fillStyle = '#ff7700';
       ctx.fill();
 
       ctx.beginPath();
       ctx.arc(point2X, point2Y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = '#ff7700';
+      ctx.fillStyle = '#00cc44';
       ctx.fill();
 
-      requestAnimationFrame(drawPendulum);
+      // Atualiza os ângulos para criar movimento contínuo
+      motorAngle += motorSpeed; // motor gira ao redor de seu próprio eixo
+      rollingAngle1 += rollingSpeed; // ponto 1 gira em torno do centro
+      rollingAngle2 += rollingSpeed * 0.9; // ponto 2 gira mais devagar, criando entropia
+
+      // Continuar animação
+      requestAnimationFrame(draw);
     }
 
-    drawPendulum();
+    draw();
   </script>
 </body>
 </html>
