@@ -182,7 +182,19 @@
 
     <script>
         let dados = [[], [], []];  // Dados para 3 seções
-        
+
+        // Carregar dados do localStorage
+        window.onload = function() {
+            for (let i = 1; i <= 3; i++) {
+                const storedData = localStorage.getItem(`dadosSecao${i}`);
+                if (storedData) {
+                    dados[i - 1] = JSON.parse(storedData);
+                    atualizarTabela(i);
+                    gerarGrafico(i);
+                }
+            }
+        };
+
         function adicionarDados(secao) {
             const data = document.getElementById(`data${secao}`).value;
             const eficiencia = parseFloat(document.getElementById(`eficiencia${secao}`).value);
@@ -190,7 +202,8 @@
             const acoes = document.getElementById(`acoes${secao}`).value;
 
             if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
-                dados[secao - 1].push({ data, eficiencia, residuo, acoes });
+                dados[secao - 1].push({ data, eficiencia, residuo, acoes, taxado: [] });
+                localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
                 atualizarTabela(secao);
                 gerarGrafico(secao);
                 limparCampos(secao);
@@ -200,15 +213,22 @@
         function atualizarTabela(secao) {
             const tabela = document.getElementById(`tabelaAcoes${secao}`).getElementsByTagName('tbody')[0];
             tabela.innerHTML = '';
-            
-            dados[secao - 1].forEach(dado => {
+
+            dados[secao - 1].forEach((dado, index) => {
                 const row = tabela.insertRow();
                 row.insertCell(0).innerText = dado.data;
                 row.insertCell(1).innerText = dado.eficiencia;
                 row.insertCell(2).innerText = dado.residuo;
                 const acoesCell = row.insertCell(3);
                 acoesCell.innerText = dado.acoes;
+                acoesCell.classList.toggle('taxado', dado.taxado.includes(index)); // Aplicar efeito tachado se necessário
                 acoesCell.onclick = function() {
+                    if (dado.taxado.includes(index)) {
+                        dado.taxado = dado.taxado.filter(i => i !== index);
+                    } else {
+                        dado.taxado.push(index);
+                    }
+                    localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
                     this.classList.toggle('taxado');
                 };
             });
@@ -222,25 +242,27 @@
             const eficienciaValues = filteredData.map(dado => dado.eficiencia);
             const residuoValues = filteredData.map(dado => dado.residuo);
 
-            new Chart(chartCanvas, {
+            const ctx = chartCanvas.getContext('2d');
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
                         label: 'Eficiência',
                         data: eficienciaValues,
-                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1
                     }, {
                         label: 'Resíduo',
                         data: residuoValues,
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1
                     }]
                 },
                 options: {
+                    responsive: true,
                     scales: {
                         y: {
                             beginAtZero: true
@@ -257,6 +279,5 @@
             document.getElementById(`acoes${secao}`).value = '';
         }
     </script>
-
 </body>
 </html>
