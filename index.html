@@ -83,10 +83,11 @@
         }
         td {
             background-color: #fafafa;
+            cursor: pointer;
         }
         .taxado {
+            text-decoration: line-through;
             color: red;
-            font-weight: bold;
         }
         @media (max-width: 768px) {
             .container {
@@ -124,7 +125,6 @@
                         <th>Eficiência</th>
                         <th>Resíduo</th>
                         <th>Ações</th>
-                        <th>Ação Taxada</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -149,7 +149,6 @@
                         <th>Eficiência</th>
                         <th>Resíduo</th>
                         <th>Ações</th>
-                        <th>Ação Taxada</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -174,7 +173,6 @@
                         <th>Eficiência</th>
                         <th>Resíduo</th>
                         <th>Ações</th>
-                        <th>Ação Taxada</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -208,16 +206,12 @@
                 row.insertCell(0).innerText = dado.data;
                 row.insertCell(1).innerText = dado.eficiencia;
                 row.insertCell(2).innerText = dado.residuo;
-                row.insertCell(3).innerText = dado.acoes;
-                const taxadoCell = row.insertCell(4);
-                taxadoCell.innerHTML = `<button onclick="taxarAcao(this)">Taxar</button>`;
+                const acoesCell = row.insertCell(3);
+                acoesCell.innerText = dado.acoes;
+                acoesCell.onclick = function() {
+                    this.classList.toggle('taxado');
+                };
             });
-        }
-
-        function taxarAcao(button) {
-            const row = button.parentElement.parentElement;
-            row.cells[4].classList.add('taxado');
-            button.disabled = true;
         }
 
         function gerarGrafico(secao) {
