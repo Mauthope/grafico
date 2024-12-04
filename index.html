@@ -8,10 +8,16 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
   <style>
-    body {
-  font-family: Arial, sans-serif;
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  padding: 20px;
 }
 
 .container {
@@ -21,20 +27,63 @@
 
 .section {
   display: flex;
-  margin: 10px 0;
+  justify-content: space-between;
 }
 
 .part {
-  flex: 1;
+  width: 30%;
+  background-color: #fff;
+  padding: 15px;
+  border: 1px solid #ddd;
+  margin: 10px;
+}
+
+.data-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.data-form input {
   padding: 10px;
   border: 1px solid #ccc;
-  margin: 5px;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
 }
 
 canvas {
-  width: 100% !important;
-  height: auto !important;
+  width: 100%;
+  height: 200px;
+  margin-top: 20px;
 }
+
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid #ddd;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+}
+
 
   </style>
 <body>
@@ -86,79 +135,84 @@ canvas {
   </div>
   <script src="script.js"></script>
   <script>
-    function saveData(partNumber) {
-  const date = document.getElementById(`date${partNumber}`).value;
-  const efficiency = parseFloat(document.getElementById(`efficiency${partNumber}`).value);
-  const waste = parseFloat(document.getElementById(`waste${partNumber}`).value);
+// Função para salvar os dados em localStorage
+function saveData(event, partId) {
+  event.preventDefault();
 
-  if (!date || isNaN(efficiency) || isNaN(waste)) {
-    alert('Por favor, preencha todos os campos corretamente.');
-    return;
-  }
+  // Obter os dados do formulário
+  const date = document.getElementById(`date${partId}`).value;
+  const efficiency = parseFloat(document.getElementById(`efficiency${partId}`).value);
+  const waste = parseFloat(document.getElementById(`waste${partId}`).value);
 
-  const dataKey = `dataPart${partNumber}`;
-  const existingData = JSON.parse(localStorage.getItem(dataKey)) || [];
+  // Salvar os dados em localStorage
+  let storedData = JSON.parse(localStorage.getItem(partId)) || [];
+  storedData.push({ date, efficiency, waste });
+  localStorage.setItem(partId, JSON.stringify(storedData));
 
-  existingData.push({ date, efficiency, waste });
-  localStorage.setItem(dataKey, JSON.stringify(existingData));
+  // Adicionar a ação na tabela
+  const table = document.getElementById(`actions${partId}`).getElementsByTagName('tbody')[0];
+  const row = table.insertRow();
+  const cell = row.insertCell(0);
+  cell.innerText = `Data: ${date}, Eficiência: ${efficiency}, Resíduo: ${waste}`;
 
-  updateChart(partNumber, existingData);
-  updateAverage(partNumber, existingData);
-  updateActions(partNumber, existingData);
+  // Atualizar o gráfico e as médias
+  updateChart(partId, storedData);
+  updateAverages(partId, storedData);
 }
 
-function updateChart(partNumber, data) {
-  const ctx = document.getElementById(`chart${partNumber}`).getContext('2d');
+// Função para atualizar o gráfico
+function updateChart(partId, data) {
   const labels = data.map(item => item.date);
   const efficiencyData = data.map(item => item.efficiency);
   const wasteData = data.map(item => item.waste);
 
-  new Chart(ctx, {
+  const ctx = document.getElementById(`chart${partId}`).getContext('2d');
+  if (window[`${partId}Chart`]) window[`${partId}Chart`].destroy();
+
+  window[`${partId}Chart`] = new Chart(ctx, {
     type: 'bar',
     data: {
       labels,
       datasets: [
         {
-          label: 'Eficiência (%)',
+          label: 'Eficiência',
           data: efficiencyData,
-          backgroundColor: 'rgba(75, 192, 192, 0.5)'
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
         },
         {
-          label: 'Resíduo (kg)',
+          label: 'Resíduo',
           data: wasteData,
-          backgroundColor: 'rgba(255, 99, 132, 0.5)'
+          backgroundColor: 'rgba(255, 99, 132, 0.6)',
         }
       ]
     }
   });
 }
 
-function updateAverage(partNumber, data) {
-  const avgEfficiency = (data.reduce((sum, item) => sum + item.efficiency, 0) / data.length).toFixed(2);
-  const avgWaste = (data.reduce((sum, item) => sum + item.waste, 0) / data.length).toFixed(2);
+// Função para atualizar as médias
+function updateAverages(partId, data) {
+  const efficiencyAvg = data.reduce((sum, item) => sum + item.efficiency, 0) / data.length;
+  const wasteAvg = data.reduce((sum, item) => sum + item.waste, 0) / data.length;
 
-  document.getElementById(`average${partNumber}`).textContent =
-    `Média - Eficiência: ${avgEfficiency}%, Resíduo: ${avgWaste}kg`;
+  document.getElementById(`avg-efficiency${partId}`).innerText = efficiencyAvg.toFixed(2);
+  document.getElementById(`avg-waste${partId}`).innerText = wasteAvg.toFixed(2);
 }
 
-function updateActions(partNumber, data) {
-  const table = document.getElementById(`actions${partNumber}`);
-  table.innerHTML = `<tr><th>Data</th><th>Eficiência</th><th>Resíduo</th></tr>`;
-  data.forEach(item => {
-    table.innerHTML += `<tr><td>${item.date}</td><td>${item.efficiency}</td><td>${item.waste}</td></tr>`;
+// Carregar dados salvos do localStorage ao carregar a página
+window.onload = () => {
+  ['part1', 'part2', 'part3'].forEach(partId => {
+    const storedData = JSON.parse(localStorage.getItem(partId)) || [];
+    storedData.forEach(item => {
+      const table = document.getElementById(`actions${partId}`).getElementsByTagName('tbody')[0];
+      const row = table.insertRow();
+      const cell = row.insertCell(0);
+      cell.innerText = `Data: ${item.date}, Eficiência: ${item.efficiency}, Resíduo: ${item.waste}`;
+    });
+    updateChart(partId, storedData);
+    updateAverages(partId, storedData);
   });
-}
+};
 
-// Carregar dados salvos ao iniciar
-document.addEventListener('DOMContentLoaded', () => {
-  for (let i = 1; i <= 3; i++) {
-    const dataKey = `dataPart${i}`;
-    const data = JSON.parse(localStorage.getItem(dataKey)) || [];
-    updateChart(i, data);
-    updateAverage(i, data);
-    updateActions(i, data);
-  }
-});
 
   </script>
 </body>
