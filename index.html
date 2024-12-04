@@ -89,6 +89,25 @@
       font-weight: bold;
     }
 
+    .action-input {
+      padding: 8px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .action-btn {
+      padding: 8px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .action-btn:hover {
+      background-color: #0056b3;
+    }
+
     .strikethrough {
       text-decoration: line-through;
     }
@@ -97,12 +116,14 @@
 <body>
 
   <div class="container">
+    <!-- Sessões 1 a 6 -->
     <div class="section" id="section1">
       <h3 class="section-header">Parte 1</h3>
       <form class="data-form" onsubmit="saveData(event, 'part1')">
         <input type="date" id="date1" required>
         <input type="number" id="efficiency1" placeholder="Eficiência" required>
         <input type="number" id="waste1" placeholder="Resíduo" required>
+        <input type="text" id="action1" class="action-input" placeholder="Adicionar Ação">
         <button type="submit">Salvar Dados</button>
       </form>
       <canvas id="chart1"></canvas>
@@ -116,40 +137,43 @@
       </table>
     </div>
 
-    <!-- Repetir para as outras seções 2 a 6 -->
-    <!-- ... (Código para as outras seções) ... -->
+    <!-- Replicar para outras seções (2 a 6) com id's correspondentes -->
 
   </div>
 
   <script>
-    // Função para salvar os dados em localStorage
     function saveData(event, partId) {
       event.preventDefault();
 
       const date = document.getElementById(`date${partId}`).value;
       const efficiency = parseFloat(document.getElementById(`efficiency${partId}`).value);
       const waste = parseFloat(document.getElementById(`waste${partId}`).value);
+      const action = document.getElementById(`action${partId}`).value;
 
       let storedData = JSON.parse(localStorage.getItem(partId)) || [];
       storedData.push({ date, efficiency, waste });
       localStorage.setItem(partId, JSON.stringify(storedData));
 
-      const actionsTable = document.getElementById(`actions${partId}`).getElementsByTagName("tbody")[0];
-      const newRow = actionsTable.insertRow();
-      const cell = newRow.insertCell(0);
-      cell.textContent = `Dados salvos para ${date}`;
-      
-      // Adicionando evento de clique para marcar como taxado
-      cell.addEventListener('click', () => {
-        cell.classList.toggle('strikethrough');
-      });
+      if (action) {
+        const actionsTable = document.getElementById(`actions${partId}`).getElementsByTagName("tbody")[0];
+        const newRow = actionsTable.insertRow();
+        const cell = newRow.insertCell(0);
+        cell.textContent = action;
+
+        const actionBtn = document.createElement("button");
+        actionBtn.classList.add("action-btn");
+        actionBtn.textContent = "Concluir Ação";
+        actionBtn.onclick = function() {
+          cell.classList.toggle("strikethrough");
+        };
+        newRow.appendChild(actionBtn);
+      }
 
       updateChart(partId);
     }
 
     function updateChart(partId) {
       const storedData = JSON.parse(localStorage.getItem(partId)) || [];
-      
       if (storedData.length === 0) return;
 
       const avgEfficiency = storedData.reduce((acc, item) => acc + item.efficiency, 0) / storedData.length;
@@ -163,6 +187,9 @@
       const wasteData = storedData.map(item => item.waste);
 
       const ctx = document.getElementById(`chart${partId}`).getContext('2d');
+      const existingChart = Chart.getChart(`chart${partId}`);
+      if (existingChart) existingChart.destroy();  // Remove the existing chart before creating a new one
+
       new Chart(ctx, {
         type: 'bar',
         data: {
@@ -187,18 +214,19 @@
         options: {
           responsive: true,
           scales: {
-            y: { beginAtZero: true }
+            y: {
+              beginAtZero: true
+            }
           }
         }
       });
     }
 
-    // Inicializa os gráficos ao carregar a página
     window.onload = () => {
       for (let i = 1; i <= 6; i++) {
         updateChart(`part${i}`);
       }
-    }
+    };
   </script>
 </body>
 </html>
