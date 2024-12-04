@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aplicação com LocalStorage</title>
+  <title>Aplicação de Eficiência e Resíduo</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
   <style>
-* {
+    * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -84,58 +84,71 @@ th, td {
   text-align: center;
 }
 
-
   </style>
 <body>
+
   <div class="container">
-    <!-- Sessão 1 -->
-    <div class="section">
+    <div class="section" id="section1">
       <div class="part" id="part1">
-        <h3>Parte 1</h3>
-        <form>
-          <input type="date" id="date1" placeholder="Data">
-          <input type="number" id="efficiency1" placeholder="Eficiência (%)">
-          <input type="number" id="waste1" placeholder="Resíduo (kg)">
-          <button type="button" onclick="saveData(1)">Salvar</button>
+        <h2>Parte 1</h2>
+        <form class="data-form" onsubmit="saveData(event, 'part1')">
+          <input type="date" id="date1" required>
+          <input type="number" id="efficiency1" placeholder="Eficiência" required>
+          <input type="number" id="waste1" placeholder="Resíduo" required>
+          <button type="submit">Salvar Dados</button>
         </form>
         <canvas id="chart1"></canvas>
-        <table id="actions1"></table>
-        <p id="average1"></p>
+        <h3>Média Eficiência: <span id="avg-efficiency1">0</span></h3>
+        <h3>Média Resíduo: <span id="avg-waste1">0</span></h3>
+        <table id="actions1">
+          <thead>
+            <tr><th>Ações</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
       <div class="part" id="part2">
-        <h3>Parte 2</h3>
-        <form>
-          <input type="date" id="date2" placeholder="Data">
-          <input type="number" id="efficiency2" placeholder="Eficiência (%)">
-          <input type="number" id="waste2" placeholder="Resíduo (kg)">
-          <button type="button" onclick="saveData(2)">Salvar</button>
+        <h2>Parte 2</h2>
+        <form class="data-form" onsubmit="saveData(event, 'part2')">
+          <input type="date" id="date2" required>
+          <input type="number" id="efficiency2" placeholder="Eficiência" required>
+          <input type="number" id="waste2" placeholder="Resíduo" required>
+          <button type="submit">Salvar Dados</button>
         </form>
         <canvas id="chart2"></canvas>
-        <table id="actions2"></table>
-        <p id="average2"></p>
+        <h3>Média Eficiência: <span id="avg-efficiency2">0</span></h3>
+        <h3>Média Resíduo: <span id="avg-waste2">0</span></h3>
+        <table id="actions2">
+          <thead>
+            <tr><th>Ações</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
       <div class="part" id="part3">
-        <h3>Parte 3</h3>
-        <form>
-          <input type="date" id="date3" placeholder="Data">
-          <input type="number" id="efficiency3" placeholder="Eficiência (%)">
-          <input type="number" id="waste3" placeholder="Resíduo (kg)">
-          <button type="button" onclick="saveData(3)">Salvar</button>
+        <h2>Parte 3</h2>
+        <form class="data-form" onsubmit="saveData(event, 'part3')">
+          <input type="date" id="date3" required>
+          <input type="number" id="efficiency3" placeholder="Eficiência" required>
+          <input type="number" id="waste3" placeholder="Resíduo" required>
+          <button type="submit">Salvar Dados</button>
         </form>
         <canvas id="chart3"></canvas>
-        <table id="actions3"></table>
-        <p id="average3"></p>
+        <h3>Média Eficiência: <span id="avg-efficiency3">0</span></h3>
+        <h3>Média Resíduo: <span id="avg-waste3">0</span></h3>
+        <table id="actions3">
+          <thead>
+            <tr><th>Ações</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
-
-    <!-- Sessão 2 -->
-    <div class="section">
-      <!-- Replicar lógica da Sessão 1 para outras partes -->
-    </div>
   </div>
+
   <script src="script.js"></script>
   <script>
-// Função para salvar os dados em localStorage
+    // Função para salvar os dados em localStorage
 function saveData(event, partId) {
   event.preventDefault();
 
@@ -212,7 +225,6 @@ window.onload = () => {
     updateAverages(partId, storedData);
   });
 };
-
 
   </script>
 </body>
