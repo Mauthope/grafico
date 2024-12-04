@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eficiência e Resíduos</title>
+  <title>Aplicação de Eficiência e Resíduo</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * {
       margin: 0;
@@ -19,21 +20,16 @@
 
     .container {
       display: flex;
-      flex-direction: column;
-      gap: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .section {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .part {
       width: 30%;
-      background: #fff;
+      background-color: #fff;
       padding: 15px;
       border: 1px solid #ddd;
-      border-radius: 8px;
+      margin-bottom: 20px;
     }
 
     .data-form {
@@ -42,145 +38,241 @@
       gap: 10px;
     }
 
-    .data-form input,
-    .data-form textarea,
-    .data-form button {
+    .data-form input {
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
 
     button {
-      background: #4caf50;
+      padding: 10px;
+      background-color: #4CAF50;
       color: white;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
     }
 
     button:hover {
-      background: #45a049;
+      background-color: #45a049;
     }
 
     canvas {
-      margin-top: 20px;
+      width: 100%;
       height: 200px;
+      margin-top: 20px;
     }
 
     table {
-      margin-top: 20px;
       width: 100%;
+      margin-top: 20px;
       border-collapse: collapse;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
     }
 
     th, td {
       padding: 10px;
-      border: 1px solid #ddd;
       text-align: center;
     }
+
+    .container > .section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section-header {
+      text-align: center;
+      font-weight: bold;
+    }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 </head>
 <body>
+
   <div class="container">
-    <!-- Seção Superior -->
-    <div class="section" id="section-upper">
-      <!-- 3 partes -->
-      <div class="part" id="part1"></div>
-      <div class="part" id="part2"></div>
-      <div class="part" id="part3"></div>
+    <!-- Sessões 1 a 3 (Parte de Cima) -->
+    <div class="section" id="section1">
+      <h3 class="section-header">Parte 1</h3>
+      <form class="data-form" onsubmit="saveData(event, 'part1')">
+        <input type="date" id="date1" required>
+        <input type="number" id="efficiency1" placeholder="Eficiência" required>
+        <input type="number" id="waste1" placeholder="Resíduo" required>
+        <button type="submit">Salvar Dados</button>
+      </form>
+      <canvas id="chart1"></canvas>
+      <h3>Média Eficiência: <span id="avg-efficiency1">0</span></h3>
+      <h3>Média Resíduo: <span id="avg-waste1">0</span></h3>
+      <table id="actions1">
+        <thead>
+          <tr><th>Ações</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
 
-    <!-- Seção Inferior -->
-    <div class="section" id="section-lower">
-      <!-- 3 partes -->
-      <div class="part" id="part4"></div>
-      <div class="part" id="part5"></div>
-      <div class="part" id="part6"></div>
+    <div class="section" id="section2">
+      <h3 class="section-header">Parte 2</h3>
+      <form class="data-form" onsubmit="saveData(event, 'part2')">
+        <input type="date" id="date2" required>
+        <input type="number" id="efficiency2" placeholder="Eficiência" required>
+        <input type="number" id="waste2" placeholder="Resíduo" required>
+        <button type="submit">Salvar Dados</button>
+      </form>
+      <canvas id="chart2"></canvas>
+      <h3>Média Eficiência: <span id="avg-efficiency2">0</span></h3>
+      <h3>Média Resíduo: <span id="avg-waste2">0</span></h3>
+      <table id="actions2">
+        <thead>
+          <tr><th>Ações</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="section" id="section3">
+      <h3 class="section-header">Parte 3</h3>
+      <form class="data-form" onsubmit="saveData(event, 'part3')">
+        <input type="date" id="date3" required>
+        <input type="number" id="efficiency3" placeholder="Eficiência" required>
+        <input type="number" id="waste3" placeholder="Resíduo" required>
+        <button type="submit">Salvar Dados</button>
+      </form>
+      <canvas id="chart3"></canvas>
+      <h3>Média Eficiência: <span id="avg-efficiency3">0</span></h3>
+      <h3>Média Resíduo: <span id="avg-waste3">0</span></h3>
+      <table id="actions3">
+        <thead>
+          <tr><th>Ações</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Sessões 4 a 6 (Parte de Baixo) -->
+    <div class="section" id="section4">
+      <h3 class="section-header">Parte 4</h3>
+      <form class="data-form" onsubmit="saveData(event, 'part4')">
+        <input type="date" id="date4" required>
+        <input type="number" id="efficiency4" placeholder="Eficiência" required>
+        <input type="number" id="waste4" placeholder="Resíduo" required>
+        <button type="submit">Salvar Dados</button>
+      </form>
+      <canvas id="chart4"></canvas>
+      <h3>Média Eficiência: <span id="avg-efficiency4">0</span></h3>
+      <h3>Média Resíduo: <span id="avg-waste4">0</span></h3>
+      <table id="actions4">
+        <thead>
+          <tr><th>Ações</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="section" id="section5">
+      <h3 class="section-header">Parte 5</h3>
+      <form class="data-form" onsubmit="saveData(event, 'part5')">
+        <input type="date" id="date5" required>
+        <input type="number" id="efficiency5" placeholder="Eficiência" required>
+        <input type="number" id="waste5" placeholder="Resíduo" required>
+        <button type="submit">Salvar Dados</button>
+      </form>
+      <canvas id="chart5"></canvas>
+      <h3>Média Eficiência: <span id="avg-efficiency5">0</span></h3>
+      <h3>Média Resíduo: <span id="avg-waste5">0</span></h3>
+      <table id="actions5">
+        <thead>
+          <tr><th>Ações</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="section" id="section6">
+      <h3 class="section-header">Parte 6</h3>
+      <form class="data-form" onsubmit="saveData(event, 'part6')">
+        <input type="date" id="date6" required>
+        <input type="number" id="efficiency6" placeholder="Eficiência" required>
+        <input type="number" id="waste6" placeholder="Resíduo" required>
+        <button type="submit">Salvar Dados</button>
+      </form>
+      <canvas id="chart6"></canvas>
+      <h3>Média Eficiência: <span id="avg-efficiency6">0</span></h3>
+      <h3>Média Resíduo: <span id="avg-waste6">0</span></h3>
+      <table id="actions6">
+        <thead>
+          <tr><th>Ações</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
 
   <script>
-    // Função para criar a interface de cada parte
-    function createPart(partId) {
-      const part = document.getElementById(partId);
-
-      part.innerHTML = `
-        <h2>Parte ${partId.replace('part', '')}</h2>
-        <form class="data-form" onsubmit="saveData(event, '${partId}')">
-          <input type="date" id="date-${partId}" required>
-          <input type="number" id="efficiency-${partId}" placeholder="Eficiência" required>
-          <input type="number" id="waste-${partId}" placeholder="Resíduo" required>
-          <textarea id="action-${partId}" placeholder="Ações" rows="2"></textarea>
-          <button type="submit">Salvar Dados</button>
-        </form>
-        <canvas id="chart-${partId}"></canvas>
-        <h3>Média Eficiência: <span id="avg-efficiency-${partId}">0</span></h3>
-        <h3>Média Resíduo: <span id="avg-waste-${partId}">0</span></h3>
-        <table>
-          <thead>
-            <tr><th>Ações Salvas</th></tr>
-          </thead>
-          <tbody id="actions-${partId}"></tbody>
-        </table>
-      `;
-    }
-
-    // Função para salvar os dados no localStorage
+    // Função para salvar os dados em localStorage
     function saveData(event, partId) {
       event.preventDefault();
 
-      const date = document.getElementById(`date-${partId}`).value;
-      const efficiency = parseFloat(document.getElementById(`efficiency-${partId}`).value);
-      const waste = parseFloat(document.getElementById(`waste-${partId}`).value);
-      const action = document.getElementById(`action-${partId}`).value;
+      // Obter os dados do formulário
+      const date = document.getElementById(`date${partId}`).value;
+      const efficiency = parseFloat(document.getElementById(`efficiency${partId}`).value);
+      const waste = parseFloat(document.getElementById(`waste${partId}`).value);
 
-      const storedData = JSON.parse(localStorage.getItem(partId)) || [];
-      storedData.push({ date, efficiency, waste, action });
+      // Salvar os dados em localStorage
+      let storedData = JSON.parse(localStorage.getItem(partId)) || [];
+      storedData.push({ date, efficiency, waste });
       localStorage.setItem(partId, JSON.stringify(storedData));
 
-      updateTable(partId, storedData);
-      updateChart(partId, storedData);
-      updateAverages(partId, storedData);
+      // Adicionar a ação na tabela
+      const actionsTable = document.getElementById(`actions${partId}`).getElementsByTagName("tbody")[0];
+      const newRow = actionsTable.insertRow();
+      const cell = newRow.insertCell(0);
+      cell.textContent = `Dados salvos para ${date}`;
+
+      // Atualizar gráfico e médias
+      updateChart(partId);
     }
 
-    // Função para atualizar a tabela de ações
-    function updateTable(partId, data) {
-      const tbody = document.getElementById(`actions-${partId}`);
-      tbody.innerHTML = '';
+    // Função para atualizar os gráficos e médias
+    function updateChart(partId) {
+      const storedData = JSON.parse(localStorage.getItem(partId)) || [];
+      
+      if (storedData.length === 0) return;
 
-      data.forEach(item => {
-        const row = document.createElement('tr');
-        const cell = document.createElement('td');
-        cell.innerText = `${item.date} - ${item.action}`;
-        row.appendChild(cell);
-        tbody.appendChild(row);
-      });
-    }
+      // Calcular médias
+      const avgEfficiency = storedData.reduce((acc, item) => acc + item.efficiency, 0) / storedData.length;
+      const avgWaste = storedData.reduce((acc, item) => acc + item.waste, 0) / storedData.length;
 
-    // Função para atualizar o gráfico
-    function updateChart(partId, data) {
-      const labels = data.map(item => item.date);
-      const efficiencies = data.map(item => item.efficiency);
-      const wastes = data.map(item => item.waste);
+      document.getElementById(`avg-efficiency${partId}`).textContent = avgEfficiency.toFixed(2);
+      document.getElementById(`avg-waste${partId}`).textContent = avgWaste.toFixed(2);
 
-      const ctx = document.getElementById(`chart-${partId}`).getContext('2d');
+      // Criar os dados para o gráfico
+      const labels = storedData.map(item => item.date);
+      const efficiencyData = storedData.map(item => item.efficiency);
+      const wasteData = storedData.map(item => item.waste);
 
-      if (window[`chart-${partId}`]) window[`chart-${partId}`].destroy();
-
-      window[`chart-${partId}`] = new Chart(ctx, {
+      // Atualizar gráfico
+      const ctx = document.getElementById(`chart${partId}`).getContext('2d');
+      new Chart(ctx, {
         type: 'bar',
         data: {
-          labels,
+          labels: labels,
           datasets: [
             {
               label: 'Eficiência',
-              data: efficiencies,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+              data: efficiencyData,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
             },
             {
               label: 'Resíduo',
-              data: wastes,
-              backgroundColor: 'rgba(255, 99, 132, 0.6)',
+              data: wasteData,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgba(255, 99, 132, 1)',
+              borderWidth: 1
             }
           ]
         },
@@ -188,38 +280,27 @@
           responsive: true,
           plugins: {
             datalabels: {
-              color: '#000',
+              display: true,
+              color: 'black',
               anchor: 'end',
-              align: 'top',
-              formatter: value => value.toFixed(1)
+              align: 'top'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
             }
           }
-        },
-        plugins: [ChartDataLabels],
+        }
       });
     }
 
-    // Função para atualizar as médias
-    function updateAverages(partId, data) {
-      const avgEfficiency = data.reduce((sum, item) => sum + item.efficiency, 0) / data.length || 0;
-      const avgWaste = data.reduce((sum, item) => sum + item.waste, 0) / data.length || 0;
-
-      document.getElementById(`avg-efficiency-${partId}`).innerText = avgEfficiency.toFixed(2);
-      document.getElementById(`avg-waste-${partId}`).innerText = avgWaste.toFixed(2);
-    }
-
-    // Inicializa as partes e carrega os dados salvos
+    // Inicializa os gráficos ao carregar a página
     window.onload = () => {
       for (let i = 1; i <= 6; i++) {
-        const partId = `part${i}`;
-        createPart(partId);
-
-        const storedData = JSON.parse(localStorage.getItem(partId)) || [];
-        updateTable(partId, storedData);
-        updateChart(partId, storedData);
-        updateAverages(partId, storedData);
+        updateChart(`part${i}`);
       }
-    };
+    }
   </script>
 </body>
 </html>
