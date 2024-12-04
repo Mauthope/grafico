@@ -3,229 +3,218 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aplicação de Eficiência e Resíduo</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Eficiência e Resíduo</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
   <style>
     * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
-  padding: 20px;
-}
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      padding: 20px;
+    }
 
-.container {
-  display: flex;
-  flex-direction: column;
-}
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-.section {
-  display: flex;
-  justify-content: space-between;
-}
+    .section {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
 
-.part {
-  width: 30%;
-  background-color: #fff;
-  padding: 15px;
-  border: 1px solid #ddd;
-  margin: 10px;
-}
+    .part {
+      flex: 1;
+      background-color: #fff;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
 
-.data-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    h2 {
+      margin-bottom: 10px;
+    }
 
-.data-form input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
+    .data-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
 
-button {
-  padding: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    .data-form input, .data-form button {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
 
-button:hover {
-  background-color: #45a049;
-}
+    .data-form button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
 
-canvas {
-  width: 100%;
-  height: 200px;
-  margin-top: 20px;
-}
+    .data-form button:hover {
+      background-color: #45a049;
+    }
 
-table {
-  width: 100%;
-  margin-top: 20px;
-  border-collapse: collapse;
-}
+    canvas {
+      width: 100%;
+      max-height: 200px;
+      margin: 15px 0;
+    }
 
-table, th, td {
-  border: 1px solid #ddd;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
 
-th, td {
-  padding: 10px;
-  text-align: center;
-}
+    table, th, td {
+      border: 1px solid #ddd;
+    }
 
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
   </style>
+</head>
 <body>
 
-  <div class="container">
-    <div class="section" id="section1">
-      <div class="part" id="part1">
-        <h2>Parte 1</h2>
-        <form class="data-form" onsubmit="saveData(event, 'part1')">
-          <input type="date" id="date1" required>
-          <input type="number" id="efficiency1" placeholder="Eficiência" required>
-          <input type="number" id="waste1" placeholder="Resíduo" required>
-          <button type="submit">Salvar Dados</button>
-        </form>
-        <canvas id="chart1"></canvas>
-        <h3>Média Eficiência: <span id="avg-efficiency1">0</span></h3>
-        <h3>Média Resíduo: <span id="avg-waste1">0</span></h3>
-        <table id="actions1">
-          <thead>
-            <tr><th>Ações</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+  <div class="container" id="app">
+    <!-- 6 Seções -->
+    ${[1, 2, 3, 4, 5, 6].map((section) => `
+      <div class="section">
+        ${[1, 2, 3].map((part) => `
+          <div class="part" id="section${section}-part${part}">
+            <h2>Seção ${section} - Parte ${part}</h2>
+            <form class="data-form" onsubmit="saveData(event, 'section${section}-part${part}')">
+              <input type="date" required>
+              <input type="number" placeholder="Eficiência" step="0.1" required>
+              <input type="number" placeholder="Resíduo" step="0.1" required>
+              <button type="submit">Salvar Dados</button>
+            </form>
+            <canvas id="chart-section${section}-part${part}"></canvas>
+            <h3>Média Eficiência: <span id="avg-efficiency-section${section}-part${part}">0</span></h3>
+            <h3>Média Resíduo: <span id="avg-waste-section${section}-part${part}">0</span></h3>
+            <table>
+              <thead>
+                <tr><th>Data</th><th>Eficiência</th><th>Resíduo</th></tr>
+              </thead>
+              <tbody id="actions-section${section}-part${part}"></tbody>
+            </table>
+          </div>
+        `).join('')}
       </div>
-      <div class="part" id="part2">
-        <h2>Parte 2</h2>
-        <form class="data-form" onsubmit="saveData(event, 'part2')">
-          <input type="date" id="date2" required>
-          <input type="number" id="efficiency2" placeholder="Eficiência" required>
-          <input type="number" id="waste2" placeholder="Resíduo" required>
-          <button type="submit">Salvar Dados</button>
-        </form>
-        <canvas id="chart2"></canvas>
-        <h3>Média Eficiência: <span id="avg-efficiency2">0</span></h3>
-        <h3>Média Resíduo: <span id="avg-waste2">0</span></h3>
-        <table id="actions2">
-          <thead>
-            <tr><th>Ações</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="part" id="part3">
-        <h2>Parte 3</h2>
-        <form class="data-form" onsubmit="saveData(event, 'part3')">
-          <input type="date" id="date3" required>
-          <input type="number" id="efficiency3" placeholder="Eficiência" required>
-          <input type="number" id="waste3" placeholder="Resíduo" required>
-          <button type="submit">Salvar Dados</button>
-        </form>
-        <canvas id="chart3"></canvas>
-        <h3>Média Eficiência: <span id="avg-efficiency3">0</span></h3>
-        <h3>Média Resíduo: <span id="avg-waste3">0</span></h3>
-        <table id="actions3">
-          <thead>
-            <tr><th>Ações</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
+    `).join('')}
   </div>
 
-  <script src="script.js"></script>
   <script>
-    // Função para salvar os dados em localStorage
-function saveData(event, partId) {
-  event.preventDefault();
+    // Função para salvar dados e atualizar o gráfico e tabelas
+    function saveData(event, id) {
+      event.preventDefault();
 
-  // Obter os dados do formulário
-  const date = document.getElementById(`date${partId}`).value;
-  const efficiency = parseFloat(document.getElementById(`efficiency${partId}`).value);
-  const waste = parseFloat(document.getElementById(`waste${partId}`).value);
+      // Capturar os campos
+      const form = event.target;
+      const date = form[0].value;
+      const efficiency = parseFloat(form[1].value);
+      const waste = parseFloat(form[2].value);
 
-  // Salvar os dados em localStorage
-  let storedData = JSON.parse(localStorage.getItem(partId)) || [];
-  storedData.push({ date, efficiency, waste });
-  localStorage.setItem(partId, JSON.stringify(storedData));
+      if (!date || isNaN(efficiency) || isNaN(waste)) return;
 
-  // Adicionar a ação na tabela
-  const table = document.getElementById(`actions${partId}`).getElementsByTagName('tbody')[0];
-  const row = table.insertRow();
-  const cell = row.insertCell(0);
-  cell.innerText = `Data: ${date}, Eficiência: ${efficiency}, Resíduo: ${waste}`;
+      // Carregar dados existentes no LocalStorage
+      const storedData = JSON.parse(localStorage.getItem(id)) || [];
+      storedData.push({ date, efficiency, waste });
+      localStorage.setItem(id, JSON.stringify(storedData));
 
-  // Atualizar o gráfico e as médias
-  updateChart(partId, storedData);
-  updateAverages(partId, storedData);
-}
+      // Atualizar tabela
+      updateTable(id, storedData);
 
-// Função para atualizar o gráfico
-function updateChart(partId, data) {
-  const labels = data.map(item => item.date);
-  const efficiencyData = data.map(item => item.efficiency);
-  const wasteData = data.map(item => item.waste);
+      // Atualizar gráfico e médias
+      updateChart(id, storedData);
+      updateAverages(id, storedData);
 
-  const ctx = document.getElementById(`chart${partId}`).getContext('2d');
-  if (window[`${partId}Chart`]) window[`${partId}Chart`].destroy();
-
-  window[`${partId}Chart`] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'Eficiência',
-          data: efficiencyData,
-          backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        },
-        {
-          label: 'Resíduo',
-          data: wasteData,
-          backgroundColor: 'rgba(255, 99, 132, 0.6)',
-        }
-      ]
+      // Limpar formulário
+      form.reset();
     }
-  });
-}
 
-// Função para atualizar as médias
-function updateAverages(partId, data) {
-  const efficiencyAvg = data.reduce((sum, item) => sum + item.efficiency, 0) / data.length;
-  const wasteAvg = data.reduce((sum, item) => sum + item.waste, 0) / data.length;
+    // Função para atualizar tabelas
+    function updateTable(id, data) {
+      const tbody = document.getElementById(`actions-${id}`);
+      tbody.innerHTML = ''; // Limpar tabela
+      data.forEach(item => {
+        const row = `<tr>
+          <td>${item.date}</td>
+          <td>${item.efficiency.toFixed(2)}</td>
+          <td>${item.waste.toFixed(2)}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
 
-  document.getElementById(`avg-efficiency${partId}`).innerText = efficiencyAvg.toFixed(2);
-  document.getElementById(`avg-waste${partId}`).innerText = wasteAvg.toFixed(2);
-}
+    // Função para atualizar gráfico
+    function updateChart(id, data) {
+      const ctx = document.getElementById(`chart-${id}`).getContext('2d');
+      const labels = data.map(item => item.date);
+      const efficiencies = data.map(item => item.efficiency);
+      const wastes = data.map(item => item.waste);
 
-// Carregar dados salvos do localStorage ao carregar a página
-window.onload = () => {
-  ['part1', 'part2', 'part3'].forEach(partId => {
-    const storedData = JSON.parse(localStorage.getItem(partId)) || [];
-    storedData.forEach(item => {
-      const table = document.getElementById(`actions${partId}`).getElementsByTagName('tbody')[0];
-      const row = table.insertRow();
-      const cell = row.insertCell(0);
-      cell.innerText = `Data: ${item.date}, Eficiência: ${item.efficiency}, Resíduo: ${item.waste}`;
-    });
-    updateChart(partId, storedData);
-    updateAverages(partId, storedData);
-  });
-};
+      if (window[`${id}Chart`]) window[`${id}Chart`].destroy();
 
+      window[`${id}Chart`] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Eficiência',
+              data: efficiencies,
+              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            },
+            {
+              label: 'Resíduo',
+              data: wastes,
+              backgroundColor: 'rgba(255, 99, 132, 0.6)',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    // Função para calcular médias
+    function updateAverages(id, data) {
+      const avgEfficiency = data.reduce((sum, item) => sum + item.efficiency, 0) / data.length || 0;
+      const avgWaste = data.reduce((sum, item) => sum + item.waste, 0) / data.length || 0;
+
+      document.getElementById(`avg-efficiency-${id}`).innerText = avgEfficiency.toFixed(2);
+      document.getElementById(`avg-waste-${id}`).innerText = avgWaste.toFixed(2);
+    }
+
+    // Inicializar todas as partes com dados salvos
+    window.onload = () => {
+      document.querySelectorAll('.part').forEach(part => {
+        const id = part.id;
+        const storedData = JSON.parse(localStorage.getItem(id)) || [];
+        if (storedData.length) {
+          updateTable(id, storedData);
+          updateChart(id, storedData);
+          updateAverages(id, storedData);
+        }
+      });
+    };
   </script>
+
 </body>
 </html>
