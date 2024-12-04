@@ -6,27 +6,42 @@
   <title>Aplicação de Eficiência e Resíduo</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
       padding: 20px;
     }
 
     .container {
       display: flex;
-      gap: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .section {
       width: 30%;
-      background-color: #f9f9f9;
-      padding: 20px;
+      background-color: #fff;
+      padding: 15px;
       border: 1px solid #ddd;
+      margin-bottom: 20px;
     }
 
-    .section input {
-      margin: 10px 0;
+    .data-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .data-form input {
       padding: 10px;
-      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
 
     button {
@@ -35,6 +50,7 @@
       color: white;
       border: none;
       border-radius: 5px;
+      cursor: pointer;
     }
 
     button:hover {
@@ -44,6 +60,7 @@
     canvas {
       width: 100%;
       height: 200px;
+      margin-top: 20px;
     }
 
     table {
@@ -54,11 +71,25 @@
 
     table, th, td {
       border: 1px solid #ddd;
+    }
+
+    th, td {
       padding: 10px;
       text-align: center;
     }
 
-    .strikethrough {
+    .container > .section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section-header {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .action-taxed {
       text-decoration: line-through;
     }
   </style>
@@ -66,21 +97,19 @@
 <body>
 
   <div class="container">
+    <!-- Sessões 1 a 6 (Parte de Cima e Baixo) -->
     <div class="section" id="section1">
-      <h3>Parte 1</h3>
-      <form onsubmit="saveData(event, 'part1')">
-        <input type="date" id="date1" title="Escolha a data" required>
-        <input type="number" id="efficiency1" placeholder="Eficiência" title="Digite o valor de eficiência" required>
-        <input type="number" id="waste1" placeholder="Resíduo" title="Digite o valor de resíduo" required>
-        <input type="text" id="action1" placeholder="Adicionar Ação" title="Descreva a ação a ser tomada">
+      <h3 class="section-header">Parte 1</h3>
+      <form class="data-form" onsubmit="saveData(event, 'part1')">
+        <input type="date" id="date1" required>
+        <input type="number" id="efficiency1" placeholder="Eficiência" required>
+        <input type="number" id="waste1" placeholder="Resíduo" required>
+        <input type="text" id="action1" placeholder="Escreva uma ação (opcional)">
         <button type="submit">Salvar Dados</button>
       </form>
-
       <canvas id="chart1"></canvas>
-
       <h3>Média Eficiência: <span id="avg-efficiency1">0</span></h3>
       <h3>Média Resíduo: <span id="avg-waste1">0</span></h3>
-
       <table id="actions1">
         <thead>
           <tr><th>Ações</th></tr>
@@ -88,62 +117,67 @@
         <tbody></tbody>
       </table>
     </div>
+
+    <!-- Adicionar sessões 2 a 6 conforme o modelo da sessão 1 -->
+    <!-- ... (repetir para parte 2 a parte 6) -->
+
   </div>
 
   <script>
+    // Função para salvar os dados em localStorage
     function saveData(event, partId) {
       event.preventDefault();
 
+      // Obter os dados do formulário
       const date = document.getElementById(`date${partId}`).value;
       const efficiency = parseFloat(document.getElementById(`efficiency${partId}`).value);
       const waste = parseFloat(document.getElementById(`waste${partId}`).value);
       const action = document.getElementById(`action${partId}`).value;
 
-      // Salvando dados no localStorage
+      // Salvar os dados em localStorage
       let storedData = JSON.parse(localStorage.getItem(partId)) || [];
       storedData.push({ date, efficiency, waste });
       localStorage.setItem(partId, JSON.stringify(storedData));
 
-      // Atualizando a tabela de ações
+      // Adicionar a ação na tabela, se houver
       if (action) {
         const actionsTable = document.getElementById(`actions${partId}`).getElementsByTagName("tbody")[0];
         const newRow = actionsTable.insertRow();
         const cell = newRow.insertCell(0);
         cell.textContent = action;
-
-        const actionBtn = document.createElement("button");
-        actionBtn.textContent = "Concluir Ação";
-        actionBtn.onclick = function() {
-          cell.classList.toggle("strikethrough");
-        };
-        newRow.appendChild(actionBtn);
+        cell.onclick = () => toggleActionTaxed(cell);
       }
 
+      // Atualizar gráfico e médias
       updateChart(partId);
     }
 
+    // Função para marcar a ação como 'taxada'
+    function toggleActionTaxed(cell) {
+      cell.classList.toggle("action-taxed");
+    }
+
+    // Função para atualizar os gráficos e médias
     function updateChart(partId) {
       const storedData = JSON.parse(localStorage.getItem(partId)) || [];
+      
       if (storedData.length === 0) return;
 
+      // Calcular médias
       const avgEfficiency = storedData.reduce((acc, item) => acc + item.efficiency, 0) / storedData.length;
       const avgWaste = storedData.reduce((acc, item) => acc + item.waste, 0) / storedData.length;
 
       document.getElementById(`avg-efficiency${partId}`).textContent = avgEfficiency.toFixed(2);
       document.getElementById(`avg-waste${partId}`).textContent = avgWaste.toFixed(2);
 
+      // Criar os dados para o gráfico
       const labels = storedData.map(item => item.date);
       const efficiencyData = storedData.map(item => item.efficiency);
       const wasteData = storedData.map(item => item.waste);
 
+      // Atualizar gráfico
       const ctx = document.getElementById(`chart${partId}`).getContext('2d');
-
-      // Se já existir o gráfico, destrua e recrie
-      if (window[`${partId}Chart`]) {
-        window[`${partId}Chart`].destroy();
-      }
-
-      window[`${partId}Chart`] = new Chart(ctx, {
+      new Chart(ctx, {
         type: 'bar',
         data: {
           labels: labels,
@@ -166,6 +200,14 @@
         },
         options: {
           responsive: true,
+          plugins: {
+            datalabels: {
+              display: true,
+              color: 'black',
+              anchor: 'end',
+              align: 'top'
+            }
+          },
           scales: {
             y: {
               beginAtZero: true
@@ -175,11 +217,12 @@
       });
     }
 
-    // Carregar os gráficos na inicialização
+    // Inicializa os gráficos ao carregar a página
     window.onload = () => {
-      updateChart('part1');
-    };
+      for (let i = 1; i <= 6; i++) {
+        updateChart(`part${i}`);
+      }
+    }
   </script>
-
 </body>
 </html>
