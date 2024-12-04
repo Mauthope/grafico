@@ -182,14 +182,19 @@
 
     <script>
         let dados = [[], [], []];  // Dados para 3 seções
+        let acoesTaxadas = [[], [], []];  // Ações tachadas para 3 seções
 
-        // Carregar o estado "taxado" de localStorage ao iniciar a página
-        document.addEventListener("DOMContentLoaded", () => {
-            carregarDadosLocalStorage();
-            atualizarGrafico(1);
-            atualizarGrafico(2);
-            atualizarGrafico(3);
-        });
+        // Carregar dados do localStorage
+        window.onload = function() {
+            for (let secao = 0; secao < 3; secao++) {
+                let savedData = JSON.parse(localStorage.getItem(`dadosSecao${secao + 1}`)) || [];
+                dados[secao] = savedData;
+                let savedActions = JSON.parse(localStorage.getItem(`acoesTaxadasSecao${secao + 1}`)) || [];
+                acoesTaxadas[secao] = savedActions;
+                atualizarTabela(secao + 1);
+                gerarGrafico(secao + 1);
+            }
+        };
 
         function adicionarDados(secao) {
             const data = document.getElementById(`data${secao}`).value;
@@ -198,11 +203,15 @@
             const acoes = document.getElementById(`acoes${secao}`).value;
 
             if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
-                // Adiciona os dados no array da seção
                 dados[secao - 1].push({ data, eficiencia, residuo, acoes });
+                acoesTaxadas[secao - 1].push([]); // Inicializa uma lista vazia para ações tachadas
+
+                // Salva no localStorage
+                localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
+                localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
+
                 atualizarTabela(secao);
                 gerarGrafico(secao);
-                salvarDadosLocalStorage();
                 limparCampos(secao);
             }
         }
@@ -218,45 +227,43 @@
                 row.insertCell(2).innerText = dado.residuo;
                 const acoesCell = row.insertCell(3);
                 acoesCell.innerText = dado.acoes;
+                acoesCell.classList.toggle('taxado', acoesTaxadas[secao - 1][index]);
                 acoesCell.onclick = function() {
-                    this.classList.toggle('taxado');
-                    dados[secao - 1][index].acoesTaxada = this.classList.contains('taxado'); // Salva o estado "taxado"
-                    salvarDadosLocalStorage();  // Atualiza o localStorage sempre que uma ação é taxada
+                    acoesTaxadas[secao - 1][index] = !acoesTaxadas[secao - 1][index];
+                    localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
+                    atualizarTabela(secao);
                 };
-                if (dado.acoesTaxada) {
-                    acoesCell.classList.add('taxado');
-                }
             });
         }
 
         function gerarGrafico(secao) {
-            const chartCanvas = document.getElementById(`chart${secao}`);
-            const filteredData = dados[secao - 1].filter(dado => dado.data);
+            const ctx = document.getElementById(`chart${secao}`).getContext('2d');
+            const labels = dados[secao - 1].map(dado => dado.data);
+            const eficienciaData = dados[secao - 1].map(dado => dado.eficiencia);
+            const residuoData = dados[secao - 1].map(dado => dado.residuo);
 
-            const labels = filteredData.map(dado => dado.data);
-            const eficienciaValues = filteredData.map(dado => dado.eficiencia);
-            const residuoValues = filteredData.map(dado => dado.residuo);
-
-            new Chart(chartCanvas, {
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label: 'Eficiência',
-                        data: eficienciaValues,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }, {
-                        label: 'Resíduo',
-                        data: residuoValues,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }]
+                    datasets: [
+                        {
+                            label: 'Eficiência',
+                            data: eficienciaData,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Resíduo',
+                            data: residuoData,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
                 },
                 options: {
-                    responsive: true,
                     scales: {
                         y: {
                             beginAtZero: true
@@ -264,31 +271,6 @@
                     }
                 }
             });
-        }
-
-        function atualizarGrafico(secao) {
-            const chartCanvas = document.getElementById(`chart${secao}`);
-            if (chartCanvas) {
-                gerarGrafico(secao);
-            }
-        }
-
-        function salvarDadosLocalStorage() {
-            localStorage.setItem('dados', JSON.stringify(dados));
-        }
-
-        function carregarDadosLocalStorage() {
-            const savedDados = JSON.parse(localStorage.getItem('dados'));
-            if (savedDados) {
-                dados = savedDados;
-                dados.forEach((secaoDados, index) => {
-                    secaoDados.forEach((dado) => {
-                        dado.acoesTaxada = dado.acoesTaxada || false; // Garantir que a propriedade exista
-                    });
-                    atualizarTabela(index + 1);
-                    atualizarGrafico(index + 1);
-                });
-            }
         }
 
         function limparCampos(secao) {
