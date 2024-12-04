@@ -88,23 +88,19 @@
       text-align: center;
       font-weight: bold;
     }
-
-    .action-taxed {
-      text-decoration: line-through;
-    }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <!-- Sessões 1 a 6 (Parte de Cima e Baixo) -->
+    <!-- Sessões 1 a 6 -->
+    <!-- Exemplo da estrutura de uma seção -->
     <div class="section" id="section1">
       <h3 class="section-header">Parte 1</h3>
       <form class="data-form" onsubmit="saveData(event, 'part1')">
         <input type="date" id="date1" required>
         <input type="number" id="efficiency1" placeholder="Eficiência" required>
         <input type="number" id="waste1" placeholder="Resíduo" required>
-        <input type="text" id="action1" placeholder="Escreva uma ação (opcional)">
         <button type="submit">Salvar Dados</button>
       </form>
       <canvas id="chart1"></canvas>
@@ -118,9 +114,9 @@
       </table>
     </div>
 
-    <!-- Adicionar sessões 2 a 6 conforme o modelo da sessão 1 -->
-    <!-- ... (repetir para parte 2 a parte 6) -->
-
+    <!-- Repetir para as outras seções -->
+    <!-- seção 2 a 6 seguem a mesma estrutura, basta alterar o ID conforme necessário -->
+    
   </div>
 
   <script>
@@ -132,29 +128,20 @@
       const date = document.getElementById(`date${partId}`).value;
       const efficiency = parseFloat(document.getElementById(`efficiency${partId}`).value);
       const waste = parseFloat(document.getElementById(`waste${partId}`).value);
-      const action = document.getElementById(`action${partId}`).value;
 
       // Salvar os dados em localStorage
       let storedData = JSON.parse(localStorage.getItem(partId)) || [];
       storedData.push({ date, efficiency, waste });
       localStorage.setItem(partId, JSON.stringify(storedData));
 
-      // Adicionar a ação na tabela, se houver
-      if (action) {
-        const actionsTable = document.getElementById(`actions${partId}`).getElementsByTagName("tbody")[0];
-        const newRow = actionsTable.insertRow();
-        const cell = newRow.insertCell(0);
-        cell.textContent = action;
-        cell.onclick = () => toggleActionTaxed(cell);
-      }
+      // Adicionar a ação na tabela
+      const actionsTable = document.getElementById(`actions${partId}`).getElementsByTagName("tbody")[0];
+      const newRow = actionsTable.insertRow();
+      const cell = newRow.insertCell(0);
+      cell.textContent = `Dados salvos para ${date}`;
 
       // Atualizar gráfico e médias
       updateChart(partId);
-    }
-
-    // Função para marcar a ação como 'taxada'
-    function toggleActionTaxed(cell) {
-      cell.classList.toggle("action-taxed");
     }
 
     // Função para atualizar os gráficos e médias
@@ -175,46 +162,55 @@
       const efficiencyData = storedData.map(item => item.efficiency);
       const wasteData = storedData.map(item => item.waste);
 
-      // Atualizar gráfico
-      const ctx = document.getElementById(`chart${partId}`).getContext('2d');
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Eficiência',
-              data: efficiencyData,
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1
-            },
-            {
-              label: 'Resíduo',
-              data: wasteData,
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            datalabels: {
-              display: true,
-              color: 'black',
-              anchor: 'end',
-              align: 'top'
-            }
+      const chartCanvas = document.getElementById(`chart${partId}`);
+      let chartInstance = Chart.getChart(`chart${partId}`);
+
+      // Verifica se o gráfico já foi criado
+      if (chartInstance) {
+        chartInstance.data.labels = labels;
+        chartInstance.data.datasets[0].data = efficiencyData;
+        chartInstance.data.datasets[1].data = wasteData;
+        chartInstance.update();
+      } else {
+        new Chart(chartCanvas, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Eficiência',
+                data: efficiencyData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+              },
+              {
+                label: 'Resíduo',
+                data: wasteData,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+              }
+            ]
           },
-          scales: {
-            y: {
-              beginAtZero: true
+          options: {
+            responsive: true,
+            plugins: {
+              datalabels: {
+                display: true,
+                color: 'black',
+                anchor: 'end',
+                align: 'top'
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true
+              }
             }
           }
-        }
-      });
+        });
+      }
     }
 
     // Inicializa os gráficos ao carregar a página
