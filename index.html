@@ -7,39 +7,63 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f4f4f4;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
         }
         .container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             max-width: 1200px;
-            margin-top: 20px;
+            margin: 20px auto;
             padding: 20px;
         }
         .section {
-            background: #fff;
-            border-radius: 8px;
+            background: #ffffff;
+            border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .section input, .section select {
+        .section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .section input, .section textarea, .section button {
             width: 100%;
-            padding: 8px;
+            padding: 12px;
             margin: 10px 0;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .section button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .section button:hover {
+            background-color: #45a049;
         }
         .chart-container {
             width: 100%;
             height: 300px;
+            margin-top: 20px;
         }
         table {
             width: 100%;
@@ -51,11 +75,28 @@
             border: 1px solid #ddd;
         }
         th, td {
-            padding: 10px;
+            padding: 12px;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        td {
+            background-color: #fafafa;
         }
         .taxado {
             color: red;
             font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 500px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -75,7 +116,21 @@
             <div class="chart-container">
                 <canvas id="chart1"></canvas>
             </div>
+            <h4>Ações</h4>
+            <table id="tabelaAcoes1">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Eficiência</th>
+                        <th>Resíduo</th>
+                        <th>Ações</th>
+                        <th>Ação Taxada</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
+
         <div class="section">
             <h3>Seção 2</h3>
             <input type="date" id="data2">
@@ -86,7 +141,21 @@
             <div class="chart-container">
                 <canvas id="chart2"></canvas>
             </div>
+            <h4>Ações</h4>
+            <table id="tabelaAcoes2">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Eficiência</th>
+                        <th>Resíduo</th>
+                        <th>Ações</th>
+                        <th>Ação Taxada</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
+
         <div class="section">
             <h3>Seção 3</h3>
             <input type="date" id="data3">
@@ -97,58 +166,24 @@
             <div class="chart-container">
                 <canvas id="chart3"></canvas>
             </div>
-        </div>
-        <div class="section">
-            <h3>Seção 4</h3>
-            <input type="date" id="data4">
-            <input type="number" id="eficiencia4" placeholder="Eficiência">
-            <input type="number" id="residuo4" placeholder="Resíduo">
-            <textarea id="acoes4" placeholder="Ações"></textarea>
-            <button onclick="adicionarDados(4)">Adicionar</button>
-            <div class="chart-container">
-                <canvas id="chart4"></canvas>
-            </div>
-        </div>
-        <div class="section">
-            <h3>Seção 5</h3>
-            <input type="date" id="data5">
-            <input type="number" id="eficiencia5" placeholder="Eficiência">
-            <input type="number" id="residuo5" placeholder="Resíduo">
-            <textarea id="acoes5" placeholder="Ações"></textarea>
-            <button onclick="adicionarDados(5)">Adicionar</button>
-            <div class="chart-container">
-                <canvas id="chart5"></canvas>
-            </div>
-        </div>
-        <div class="section">
-            <h3>Seção 6</h3>
-            <input type="date" id="data6">
-            <input type="number" id="eficiencia6" placeholder="Eficiência">
-            <input type="number" id="residuo6" placeholder="Resíduo">
-            <textarea id="acoes6" placeholder="Ações"></textarea>
-            <button onclick="adicionarDados(6)">Adicionar</button>
-            <div class="chart-container">
-                <canvas id="chart6"></canvas>
-            </div>
+            <h4>Ações</h4>
+            <table id="tabelaAcoes3">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Eficiência</th>
+                        <th>Resíduo</th>
+                        <th>Ações</th>
+                        <th>Ação Taxada</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 
-    <h2>Tabela de Ações</h2>
-    <table id="tabelaAcoes">
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Eficiência</th>
-                <th>Resíduo</th>
-                <th>Ações</th>
-                <th>Ação Taxada</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
     <script>
-        let dados = [];
+        let dados = [[], [], []];  // Dados para 3 seções
         
         function adicionarDados(secao) {
             const data = document.getElementById(`data${secao}`).value;
@@ -157,18 +192,18 @@
             const acoes = document.getElementById(`acoes${secao}`).value;
 
             if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
-                dados.push({ data, eficiencia, residuo, acoes });
-                atualizarTabela();
+                dados[secao - 1].push({ data, eficiencia, residuo, acoes });
+                atualizarTabela(secao);
                 gerarGrafico(secao);
                 limparCampos(secao);
             }
         }
 
-        function atualizarTabela() {
-            const tabela = document.getElementById('tabelaAcoes').getElementsByTagName('tbody')[0];
+        function atualizarTabela(secao) {
+            const tabela = document.getElementById(`tabelaAcoes${secao}`).getElementsByTagName('tbody')[0];
             tabela.innerHTML = '';
             
-            dados.forEach(dado => {
+            dados[secao - 1].forEach(dado => {
                 const row = tabela.insertRow();
                 row.insertCell(0).innerText = dado.data;
                 row.insertCell(1).innerText = dado.eficiencia;
@@ -187,7 +222,7 @@
 
         function gerarGrafico(secao) {
             const chartCanvas = document.getElementById(`chart${secao}`);
-            const filteredData = dados.filter(dado => dado.data);
+            const filteredData = dados[secao - 1].filter(dado => dado.data);
 
             const labels = filteredData.map(dado => dado.data);
             const eficienciaValues = filteredData.map(dado => dado.eficiencia);
@@ -200,13 +235,13 @@
                     datasets: [{
                         label: 'Eficiência',
                         data: eficienciaValues,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1
                     }, {
                         label: 'Resíduo',
                         data: residuoValues,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1
                     }]
@@ -228,5 +263,6 @@
             document.getElementById(`acoes${secao}`).value = '';
         }
     </script>
+
 </body>
 </html>
