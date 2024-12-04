@@ -183,17 +183,13 @@
     <script>
         let dados = [[], [], []];  // Dados para 3 seções
 
-        // Carregar dados do localStorage
-        window.onload = function() {
-            for (let i = 1; i <= 3; i++) {
-                const storedData = localStorage.getItem(`dadosSecao${i}`);
-                if (storedData) {
-                    dados[i - 1] = JSON.parse(storedData);
-                    atualizarTabela(i);
-                    gerarGrafico(i);
-                }
-            }
-        };
+        // Carregar o estado "taxado" de localStorage ao iniciar a página
+        document.addEventListener("DOMContentLoaded", () => {
+            carregarDadosLocalStorage();
+            atualizarGrafico(1);
+            atualizarGrafico(2);
+            atualizarGrafico(3);
+        });
 
         function adicionarDados(secao) {
             const data = document.getElementById(`data${secao}`).value;
@@ -202,10 +198,11 @@
             const acoes = document.getElementById(`acoes${secao}`).value;
 
             if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
-                dados[secao - 1].push({ data, eficiencia, residuo, acoes, taxado: [] });
-                localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
+                // Adiciona os dados no array da seção
+                dados[secao - 1].push({ data, eficiencia, residuo, acoes });
                 atualizarTabela(secao);
                 gerarGrafico(secao);
+                salvarDadosLocalStorage();
                 limparCampos(secao);
             }
         }
@@ -213,7 +210,7 @@
         function atualizarTabela(secao) {
             const tabela = document.getElementById(`tabelaAcoes${secao}`).getElementsByTagName('tbody')[0];
             tabela.innerHTML = '';
-
+            
             dados[secao - 1].forEach((dado, index) => {
                 const row = tabela.insertRow();
                 row.insertCell(0).innerText = dado.data;
@@ -221,16 +218,14 @@
                 row.insertCell(2).innerText = dado.residuo;
                 const acoesCell = row.insertCell(3);
                 acoesCell.innerText = dado.acoes;
-                acoesCell.classList.toggle('taxado', dado.taxado.includes(index)); // Aplicar efeito tachado se necessário
                 acoesCell.onclick = function() {
-                    if (dado.taxado.includes(index)) {
-                        dado.taxado = dado.taxado.filter(i => i !== index);
-                    } else {
-                        dado.taxado.push(index);
-                    }
-                    localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
                     this.classList.toggle('taxado');
+                    dados[secao - 1][index].acoesTaxada = this.classList.contains('taxado'); // Salva o estado "taxado"
+                    salvarDadosLocalStorage();  // Atualiza o localStorage sempre que uma ação é taxada
                 };
+                if (dado.acoesTaxada) {
+                    acoesCell.classList.add('taxado');
+                }
             });
         }
 
@@ -242,8 +237,7 @@
             const eficienciaValues = filteredData.map(dado => dado.eficiencia);
             const residuoValues = filteredData.map(dado => dado.residuo);
 
-            const ctx = chartCanvas.getContext('2d');
-            new Chart(ctx, {
+            new Chart(chartCanvas, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -272,6 +266,31 @@
             });
         }
 
+        function atualizarGrafico(secao) {
+            const chartCanvas = document.getElementById(`chart${secao}`);
+            if (chartCanvas) {
+                gerarGrafico(secao);
+            }
+        }
+
+        function salvarDadosLocalStorage() {
+            localStorage.setItem('dados', JSON.stringify(dados));
+        }
+
+        function carregarDadosLocalStorage() {
+            const savedDados = JSON.parse(localStorage.getItem('dados'));
+            if (savedDados) {
+                dados = savedDados;
+                dados.forEach((secaoDados, index) => {
+                    secaoDados.forEach((dado) => {
+                        dado.acoesTaxada = dado.acoesTaxada || false; // Garantir que a propriedade exista
+                    });
+                    atualizarTabela(index + 1);
+                    atualizarGrafico(index + 1);
+                });
+            }
+        }
+
         function limparCampos(secao) {
             document.getElementById(`data${secao}`).value = '';
             document.getElementById(`eficiencia${secao}`).value = '';
@@ -279,5 +298,6 @@
             document.getElementById(`acoes${secao}`).value = '';
         }
     </script>
+
 </body>
 </html>
