@@ -227,7 +227,10 @@
                 row.insertCell(2).innerText = dado.residuo;
                 const acoesCell = row.insertCell(3);
                 acoesCell.innerText = dado.acoes;
-                acoesCell.classList.toggle('taxado', acoesTaxadas[secao - 1][index]);
+                // Verifica se a ação foi tachada e aplica a classe 'taxado'
+                if (acoesTaxadas[secao - 1][index]) {
+                    acoesCell.classList.add('taxado');
+                }
                 acoesCell.onclick = function() {
                     acoesTaxadas[secao - 1][index] = !acoesTaxadas[secao - 1][index];
                     localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
@@ -237,12 +240,15 @@
         }
 
         function gerarGrafico(secao) {
-            const ctx = document.getElementById(`chart${secao}`).getContext('2d');
+            const ctxEf = document.getElementById(`chart${secao}`).getContext('2d');
             const labels = dados[secao - 1].map(dado => dado.data);
             const eficienciaData = dados[secao - 1].map(dado => dado.eficiencia);
             const residuoData = dados[secao - 1].map(dado => dado.residuo);
 
-            new Chart(ctx, {
+            const eficienciaMedia = eficienciaData.reduce((a, b) => a + b, 0) / eficienciaData.length;
+            const residuoMedia = residuoData.reduce((a, b) => a + b, 0) / residuoData.length;
+
+            new Chart(ctxEf, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -255,11 +261,47 @@
                             borderWidth: 1
                         },
                         {
+                            label: 'Média Eficiência',
+                            data: new Array(eficienciaData.length).fill(eficienciaMedia),
+                            type: 'line',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            fill: false,
+                            borderWidth: 2,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Criar gráfico de resíduos
+            const ctxRes = document.getElementById(`chart${secao + 3}`).getContext('2d');
+            new Chart(ctxRes, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
                             label: 'Resíduo',
                             data: residuoData,
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 1
+                        },
+                        {
+                            label: 'Média Resíduo',
+                            data: new Array(residuoData.length).fill(residuoMedia),
+                            type: 'line',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            fill: false,
+                            borderWidth: 2,
+                            tension: 0.1
                         }
                     ]
                 },
@@ -280,6 +322,5 @@
             document.getElementById(`acoes${secao}`).value = '';
         }
     </script>
-
 </body>
 </html>
