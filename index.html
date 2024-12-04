@@ -154,6 +154,7 @@
       storedData.push({ date, efficiency, waste });
       localStorage.setItem(partId, JSON.stringify(storedData));
 
+      // Adicionando a ação na tabela de ações
       if (action) {
         const actionsTable = document.getElementById(`actions${partId}`).getElementsByTagName("tbody")[0];
         const newRow = actionsTable.insertRow();
@@ -187,10 +188,13 @@
       const wasteData = storedData.map(item => item.waste);
 
       const ctx = document.getElementById(`chart${partId}`).getContext('2d');
-      const existingChart = Chart.getChart(`chart${partId}`);
-      if (existingChart) existingChart.destroy();  // Remove the existing chart before creating a new one
 
-      new Chart(ctx, {
+      // Verifica se já existe um gráfico, se sim, destrói antes de criar um novo
+      if (window[`${partId}Chart`]) {
+        window[`${partId}Chart`].destroy();
+      }
+
+      window[`${partId}Chart`] = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: labels,
@@ -222,6 +226,7 @@
       });
     }
 
+    // Função para carregar os dados e gráficos ao carregar a página
     window.onload = () => {
       for (let i = 1; i <= 6; i++) {
         updateChart(`part${i}`);
