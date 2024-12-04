@@ -3,120 +3,163 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulação de Mandala com Movimento Dinâmico</title>
+  <title>Aplicação com LocalStorage</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
   <style>
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #1e1e1e; /* Fundo escuro */
-    }
-    canvas {
-      background-color: #2a2a2a; /* Cor do canvas */
-      border: 2px solid #fff;
-    }
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.section {
+  display: flex;
+  margin: 10px 0;
+}
+
+.part {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin: 5px;
+}
+
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
   </style>
-</head>
 <body>
-  <canvas id="canvas" width="600" height="600"></canvas>
+  <div class="container">
+    <!-- Sessão 1 -->
+    <div class="section">
+      <div class="part" id="part1">
+        <h3>Parte 1</h3>
+        <form>
+          <input type="date" id="date1" placeholder="Data">
+          <input type="number" id="efficiency1" placeholder="Eficiência (%)">
+          <input type="number" id="waste1" placeholder="Resíduo (kg)">
+          <button type="button" onclick="saveData(1)">Salvar</button>
+        </form>
+        <canvas id="chart1"></canvas>
+        <table id="actions1"></table>
+        <p id="average1"></p>
+      </div>
+      <div class="part" id="part2">
+        <h3>Parte 2</h3>
+        <form>
+          <input type="date" id="date2" placeholder="Data">
+          <input type="number" id="efficiency2" placeholder="Eficiência (%)">
+          <input type="number" id="waste2" placeholder="Resíduo (kg)">
+          <button type="button" onclick="saveData(2)">Salvar</button>
+        </form>
+        <canvas id="chart2"></canvas>
+        <table id="actions2"></table>
+        <p id="average2"></p>
+      </div>
+      <div class="part" id="part3">
+        <h3>Parte 3</h3>
+        <form>
+          <input type="date" id="date3" placeholder="Data">
+          <input type="number" id="efficiency3" placeholder="Eficiência (%)">
+          <input type="number" id="waste3" placeholder="Resíduo (kg)">
+          <button type="button" onclick="saveData(3)">Salvar</button>
+        </form>
+        <canvas id="chart3"></canvas>
+        <table id="actions3"></table>
+        <p id="average3"></p>
+      </div>
+    </div>
+
+    <!-- Sessão 2 -->
+    <div class="section">
+      <!-- Replicar lógica da Sessão 1 para outras partes -->
+    </div>
+  </div>
+  <script src="script.js"></script>
   <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
+    function saveData(partNumber) {
+  const date = document.getElementById(`date${partNumber}`).value;
+  const efficiency = parseFloat(document.getElementById(`efficiency${partNumber}`).value);
+  const waste = parseFloat(document.getElementById(`waste${partNumber}`).value);
 
-    // Parâmetros de controle
-    const originX = canvas.width / 2;
-    const originY = canvas.height / 2;
-    const radius = [120, 160, 200, 240, 280]; // raios dos pontos
-    const motorSpeed = 0.01; // velocidade de rotação do motor central
-    const numPoints = 10; // número de pontos
-    const points = []; // array para armazenar pontos
+  if (!date || isNaN(efficiency) || isNaN(waste)) {
+    alert('Por favor, preencha todos os campos corretamente.');
+    return;
+  }
 
-    // Inicializa os pontos com ângulos e velocidades definidas para criar padrões geométricos
-    const speeds = [0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065]; // velocidades fixas
-    for (let i = 0; i < numPoints; i++) {
-      points.push({
-        angle: Math.PI * 2 * (i / numPoints),
-        speed: speeds[i % speeds.length], // seleciona uma velocidade
-        radius: radius[i % radius.length], // seleciona um raio
-        trail: [] // histórico de rastros
-      });
-    }
+  const dataKey = `dataPart${partNumber}`;
+  const existingData = JSON.parse(localStorage.getItem(dataKey)) || [];
 
-    // Histórico de posições para rastro
-    const trailLength = 300; // comprimento do rastro
+  existingData.push({ date, efficiency, waste });
+  localStorage.setItem(dataKey, JSON.stringify(existingData));
 
-    function oscillate(angle) {
-      return Math.sin(angle * 2) * 5; // leve oscilação para adicionar um movimento dinâmico
-    }
+  updateChart(partNumber, existingData);
+  updateAverage(partNumber, existingData);
+  updateActions(partNumber, existingData);
+}
 
-    function draw() {
-      // Aplica uma leve opacidade ao fundo para criar efeito de rastro
-      ctx.fillStyle = 'rgba(42, 42, 42, 0.8)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+function updateChart(partNumber, data) {
+  const ctx = document.getElementById(`chart${partNumber}`).getContext('2d');
+  const labels = data.map(item => item.date);
+  const efficiencyData = data.map(item => item.efficiency);
+  const wasteData = data.map(item => item.waste);
 
-      // Desenha os pontos
-      for (let i = 0; i < points.length; i++) {
-        const point = points[i];
-
-        // Calcula a posição do ponto
-        const pointX = originX + (point.radius + oscillate(point.angle)) * Math.cos(point.angle);
-        const pointY = originY + (point.radius + oscillate(point.angle)) * Math.sin(point.angle);
-
-        // Salva as posições para o rastro
-        point.trail.push({ x: pointX, y: pointY });
-
-        // Limita o tamanho dos rastros
-        if (point.trail.length > trailLength) point.trail.shift();
-
-        // Desenha os rastros com opacidade para dar efeito de desvanecimento
-        ctx.strokeStyle = `rgba(255, 119, 0, 0.5)`; // cor do rastro
-        ctx.lineWidth = 2;
-        for (let j = 0; j < point.trail.length - 1; j++) {
-          const opacity = j / point.trail.length; // define a opacidade para o fade
-          ctx.strokeStyle = `rgba(255, 119, 0, ${opacity * 0.6})`; // ajusta a opacidade
-          ctx.beginPath();
-          ctx.moveTo(point.trail[j].x, point.trail[j].y);
-          ctx.lineTo(point.trail[j + 1].x, point.trail[j + 1].y);
-          ctx.stroke();
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Eficiência (%)',
+          data: efficiencyData,
+          backgroundColor: 'rgba(75, 192, 192, 0.5)'
+        },
+        {
+          label: 'Resíduo (kg)',
+          data: wasteData,
+          backgroundColor: 'rgba(255, 99, 132, 0.5)'
         }
-
-        // Desenha o ponto
-        ctx.beginPath();
-        ctx.arc(pointX, pointY, 8, 0, Math.PI * 2);
-        ctx.fillStyle = '#ff7700'; // cor do ponto
-        ctx.fill();
-
-        // Atualiza o ângulo para criar movimento contínuo
-        point.angle += point.speed; // movimenta o ponto
-      }
-
-      // Desenha a linha entre os pontos
-      ctx.strokeStyle = '#fff'; // cor da linha central
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 0; i < points.length; i++) {
-        const point = points[i];
-        const pointX = originX + (point.radius + oscillate(point.angle)) * Math.cos(point.angle);
-        const pointY = originY + (point.radius + oscillate(point.angle)) * Math.sin(point.angle);
-        ctx.lineTo(pointX, pointY);
-      }
-      ctx.closePath();
-      ctx.stroke();
-
-      // Desenha a bola central (motor)
-      ctx.beginPath();
-      ctx.arc(originX, originY, 15, 0, Math.PI * 2); // tamanho da bola central
-      ctx.fillStyle = '#ffcc00'; // cor da bola central
-      ctx.fill();
-
-      // Continuar animação
-      requestAnimationFrame(draw);
+      ]
     }
+  });
+}
 
-    draw();
+function updateAverage(partNumber, data) {
+  const avgEfficiency = (data.reduce((sum, item) => sum + item.efficiency, 0) / data.length).toFixed(2);
+  const avgWaste = (data.reduce((sum, item) => sum + item.waste, 0) / data.length).toFixed(2);
+
+  document.getElementById(`average${partNumber}`).textContent =
+    `Média - Eficiência: ${avgEfficiency}%, Resíduo: ${avgWaste}kg`;
+}
+
+function updateActions(partNumber, data) {
+  const table = document.getElementById(`actions${partNumber}`);
+  table.innerHTML = `<tr><th>Data</th><th>Eficiência</th><th>Resíduo</th></tr>`;
+  data.forEach(item => {
+    table.innerHTML += `<tr><td>${item.date}</td><td>${item.efficiency}</td><td>${item.waste}</td></tr>`;
+  });
+}
+
+// Carregar dados salvos ao iniciar
+document.addEventListener('DOMContentLoaded', () => {
+  for (let i = 1; i <= 3; i++) {
+    const dataKey = `dataPart${i}`;
+    const data = JSON.parse(localStorage.getItem(dataKey)) || [];
+    updateChart(i, data);
+    updateAverage(i, data);
+    updateActions(i, data);
+  }
+});
+
   </script>
 </body>
 </html>
