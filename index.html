@@ -1,82 +1,205 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gráficos de Eficiência e Resíduo</title>
+    <title>Dashboard de Eficiência e Resíduo</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Estilos para melhorar a aparência */
-        .grafico-container {
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .section {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
             display: flex;
-            justify-content: space-around;
+            flex-direction: column;
+            align-items: center;
+        }
+        .section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .section input, .section textarea, .section button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .section button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .section button:hover {
+            background-color: #45a049;
+        }
+        .chart-container {
+            width: 100%;
+            height: 300px;
             margin-top: 20px;
         }
-        canvas {
-            width: 400px;
-            height: 200px;
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            text-align: left;
         }
-        .actions {
-            margin-top: 10px;
+        table, th, td {
+            border: 1px solid #ddd;
         }
-        .tachado {
+        th, td {
+            padding: 12px;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        td {
+            background-color: #fafafa;
+            cursor: pointer;
+        }
+        .taxado {
             text-decoration: line-through;
+            color: red;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 500px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Gráficos de Eficiência e Resíduo</h1>
 
-    <div class="grafico-container">
-        <canvas id="chart1"></canvas>
-        <canvas id="chart2"></canvas>
-    </div>
+    <h1>Dashboard de Eficiência e Resíduo</h1>
+    
+    <div class="container">
+        <!-- Seções de Entrada de Dados -->
+        <div class="section">
+            <h3>Seção 1</h3>
+            <input type="date" id="data1">
+            <input type="number" id="eficiencia1" placeholder="Eficiência">
+            <input type="number" id="residuo1" placeholder="Resíduo">
+            <textarea id="acoes1" placeholder="Ações"></textarea>
+            <button onclick="adicionarDados(1)">Adicionar</button>
+            <div class="chart-container">
+                <canvas id="chart1"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart4"></canvas>
+            </div>
+            <h4>Ações</h4>
+            <table id="tabelaAcoes1">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Eficiência</th>
+                        <th>Resíduo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
 
-    <div class="grafico-container">
-        <canvas id="chart4"></canvas>
-        <canvas id="chart5"></canvas>
-    </div>
-
-    <div class="actions">
-        <h2>Ações</h2>
-        <div>
-            <button class="acao" id="acao1">Ação 1</button>
-            <button class="acao" id="acao2">Ação 2</button>
-            <button class="acao" id="acao3">Ação 3</button>
+        <!-- Similar para Seções 2 e 3 -->
+        <!-- ... -->
+        
+        <div class="section">
+            <button onclick="limparLocalStorage()">Limpar</button>
         </div>
     </div>
 
     <script>
-        // Dados de exemplo para os gráficos
-        const dados = [
-            [
-                { data: '2024-01-01', eficiencia: 85, residuo: 12 },
-                { data: '2024-01-02', eficiencia: 88, residuo: 10 },
-                { data: '2024-01-03', eficiencia: 90, residuo: 8 }
-            ],
-            [
-                { data: '2024-01-01', eficiencia: 82, residuo: 15 },
-                { data: '2024-01-02', eficiencia: 84, residuo: 13 },
-                { data: '2024-01-03', eficiencia: 89, residuo: 9 }
-            ]
-        ];
+        let dados = [[], [], []];  // Dados para 3 seções
+        let acoesTaxadas = [[], [], []];  // Ações tachadas para 3 seções
 
-        const acoesTaxadas = JSON.parse(localStorage.getItem('acoesTaxadas')) || [[], [], []]; // Carregar as ações tachadas
+        // Carregar dados do localStorage
+        window.onload = function() {
+            for (let secao = 0; secao < 3; secao++) {
+                let savedData = JSON.parse(localStorage.getItem(`dadosSecao${secao + 1}`)) || [];
+                dados[secao] = savedData;
+                let savedActions = JSON.parse(localStorage.getItem(`acoesTaxadasSecao${secao + 1}`)) || [];
+                acoesTaxadas[secao] = savedActions;
+                atualizarTabela(secao + 1);
+                gerarGrafico(secao + 1);
+            }
+        };
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Exibir ações tachadas ao carregar
-            acoesTaxadas.forEach((acoes, secao) => {
-                acoes.forEach((acionado, index) => {
-                    if (acionado) {
-                        document.getElementById(`acao${index + 1}`).classList.add('tachado');
-                    }
-                });
+        function adicionarDados(secao) {
+            const data = document.getElementById(`data${secao}`).value;
+            const eficiencia = parseFloat(document.getElementById(`eficiencia${secao}`).value);
+            const residuo = parseFloat(document.getElementById(`residuo${secao}`).value);
+            const acoes = document.getElementById(`acoes${secao}`).value;
+
+            if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
+                dados[secao - 1].push({ data, eficiencia, residuo, acoes });
+                acoesTaxadas[secao - 1].push([]); // Inicializa uma lista vazia para ações tachadas
+
+                // Salva no localStorage
+                localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
+                localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
+
+                atualizarTabela(secao);
+                gerarGrafico(secao);
+                limparCampos(secao);
+            }
+        }
+
+        function atualizarTabela(secao) {
+            const tabela = document.getElementById(`tabelaAcoes${secao}`).getElementsByTagName('tbody')[0];
+            tabela.innerHTML = '';
+            
+            dados[secao - 1].forEach((dado, index) => {
+                const row = tabela.insertRow();
+                row.insertCell(0).innerText = dado.data;
+                row.insertCell(1).innerText = dado.eficiencia;
+                row.insertCell(2).innerText = dado.residuo;
+                const acoesCell = row.insertCell(3);
+                acoesCell.innerText = dado.acoes;
+                // Verifica se a ação foi tachada e aplica a classe 'taxado'
+                if (acoesTaxadas[secao - 1][index]) {
+                    acoesCell.classList.add('taxado');
+                }
+                acoesCell.onclick = function() {
+                    acoesTaxadas[secao - 1][index] = !acoesTaxadas[secao - 1][index];
+                    localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
+                    atualizarTabela(secao);
+                };
             });
-
-            // Gerar os gráficos
-            gerarGrafico(1);
-            gerarGrafico(2);
-        });
+        }
 
         function gerarGrafico(secao) {
             const ctxEf = document.getElementById(`chart${secao}`).getContext('2d');
@@ -104,28 +227,9 @@
                             data: new Array(eficienciaData.length).fill(eficienciaMedia),
                             type: 'line',
                             borderColor: 'rgba(75, 192, 192, 1)',
-                            fill: false,
-                            borderWidth: 2,
-                            tension: 0.1
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-            
-            // Criar gráfico de resíduos
-            const ctxRes = document.getElementById(`chart${secao + 3}`).getContext('2d');
-            new Chart(ctxRes, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
+                            borderWidth: 3,
+                            fill: false
+                        },
                         {
                             label: 'Resíduo',
                             data: residuoData,
@@ -138,35 +242,33 @@
                             data: new Array(residuoData.length).fill(residuoMedia),
                             type: 'line',
                             borderColor: 'rgba(255, 99, 132, 1)',
-                            fill: false,
-                            borderWidth: 2,
-                            tension: 0.1
+                            borderWidth: 3,
+                            fill: false
                         }
                     ]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
                 }
             });
         }
 
-        // Marcar uma ação como "tachada" no localStorage
-        document.querySelectorAll('.acao').forEach((botao, index) => {
-            botao.addEventListener('click', () => {
-                const secao = Math.floor(index / 3); // Seções baseadas nos botões
-                const acaoIndex = index % 3;
-                const acaoButton = document.getElementById(`acao${acaoIndex + 1}`);
-                acaoButton.classList.toggle('tachado'); // Alterar a classe tachado
+        function limparLocalStorage() {
+            localStorage.clear();
+            dados = [[], [], []];
+            acoesTaxadas = [[], [], []];
+            atualizarTabela(1);
+            atualizarTabela(2);
+            atualizarTabela(3);
+            gerarGrafico(1);
+            gerarGrafico(2);
+            gerarGrafico(3);
+        }
 
-                // Atualizar a ação no localStorage
-                acoesTaxadas[secao][acaoIndex] = acaoButton.classList.contains('tachado');
-                localStorage.setItem('acoesTaxadas', JSON.stringify(acoesTaxadas));
-            });
-        });
+        function limparCampos(secao) {
+            document.getElementById(`data${secao}`).value = '';
+            document.getElementById(`eficiencia${secao}`).value = '';
+            document.getElementById(`residuo${secao}`).value = '';
+            document.getElementById(`acoes${secao}`).value = '';
+        }
     </script>
+
 </body>
 </html>
