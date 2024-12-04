@@ -6,42 +6,27 @@
   <title>Aplicação de Eficiência e Resíduo</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
       padding: 20px;
     }
 
     .container {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      gap: 20px;
     }
 
     .section {
       width: 30%;
-      background-color: #fff;
-      padding: 15px;
+      background-color: #f9f9f9;
+      padding: 20px;
       border: 1px solid #ddd;
-      margin-bottom: 20px;
     }
 
-    .data-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .data-form input {
+    .section input {
+      margin: 10px 0;
       padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      width: 100%;
     }
 
     button {
@@ -50,7 +35,6 @@
       color: white;
       border: none;
       border-radius: 5px;
-      cursor: pointer;
     }
 
     button:hover {
@@ -60,7 +44,6 @@
     canvas {
       width: 100%;
       height: 200px;
-      margin-top: 20px;
     }
 
     table {
@@ -71,41 +54,8 @@
 
     table, th, td {
       border: 1px solid #ddd;
-    }
-
-    th, td {
       padding: 10px;
       text-align: center;
-    }
-
-    .container > .section {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .section-header {
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .action-input {
-      padding: 8px;
-      width: 100%;
-      margin-bottom: 10px;
-    }
-
-    .action-btn {
-      padding: 8px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .action-btn:hover {
-      background-color: #0056b3;
     }
 
     .strikethrough {
@@ -116,19 +66,21 @@
 <body>
 
   <div class="container">
-    <!-- Sessões 1 a 6 -->
     <div class="section" id="section1">
-      <h3 class="section-header">Parte 1</h3>
-      <form class="data-form" onsubmit="saveData(event, 'part1')">
+      <h3>Parte 1</h3>
+      <form onsubmit="saveData(event, 'part1')">
         <input type="date" id="date1" required>
         <input type="number" id="efficiency1" placeholder="Eficiência" required>
         <input type="number" id="waste1" placeholder="Resíduo" required>
-        <input type="text" id="action1" class="action-input" placeholder="Adicionar Ação">
+        <input type="text" id="action1" placeholder="Adicionar Ação">
         <button type="submit">Salvar Dados</button>
       </form>
+
       <canvas id="chart1"></canvas>
+
       <h3>Média Eficiência: <span id="avg-efficiency1">0</span></h3>
       <h3>Média Resíduo: <span id="avg-waste1">0</span></h3>
+
       <table id="actions1">
         <thead>
           <tr><th>Ações</th></tr>
@@ -136,9 +88,6 @@
         <tbody></tbody>
       </table>
     </div>
-
-    <!-- Replicar para outras seções (2 a 6) com id's correspondentes -->
-
   </div>
 
   <script>
@@ -150,11 +99,12 @@
       const waste = parseFloat(document.getElementById(`waste${partId}`).value);
       const action = document.getElementById(`action${partId}`).value;
 
+      // Salvando dados no localStorage
       let storedData = JSON.parse(localStorage.getItem(partId)) || [];
       storedData.push({ date, efficiency, waste });
       localStorage.setItem(partId, JSON.stringify(storedData));
 
-      // Adicionando a ação na tabela de ações
+      // Atualizando a tabela de ações
       if (action) {
         const actionsTable = document.getElementById(`actions${partId}`).getElementsByTagName("tbody")[0];
         const newRow = actionsTable.insertRow();
@@ -162,7 +112,6 @@
         cell.textContent = action;
 
         const actionBtn = document.createElement("button");
-        actionBtn.classList.add("action-btn");
         actionBtn.textContent = "Concluir Ação";
         actionBtn.onclick = function() {
           cell.classList.toggle("strikethrough");
@@ -189,7 +138,7 @@
 
       const ctx = document.getElementById(`chart${partId}`).getContext('2d');
 
-      // Verifica se já existe um gráfico, se sim, destrói antes de criar um novo
+      // Se já existir o gráfico, destrua e recrie
       if (window[`${partId}Chart`]) {
         window[`${partId}Chart`].destroy();
       }
@@ -226,12 +175,11 @@
       });
     }
 
-    // Função para carregar os dados e gráficos ao carregar a página
+    // Carregar os gráficos na inicialização
     window.onload = () => {
-      for (let i = 1; i <= 6; i++) {
-        updateChart(`part${i}`);
-      }
+      updateChart('part1');
     };
   </script>
+
 </body>
 </html>
