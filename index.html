@@ -239,7 +239,7 @@
                 <tbody></tbody>
             </table>
         </div>
-<h1>Dashboard de Eficiência e Resíduo</h1>
+
         <!-- Seção 4 -->
         <div class="section">
             <h3>Seção 4</h3>
@@ -461,24 +461,113 @@
         document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
     }
 
- function limparLocalStorage() {
+function limparLocalStorage() {
     // Limpar o localStorage
-    console.log("Limpar LocalStorage");
     localStorage.clear();
     
     // Resetar as variáveis de dados e ações
     dados = [[], [], []];
     acoesTaxadas = [[], [], []];
-    
-    // Atualizar as tabelas e gráficos para refletir o estado limpo
-    console.log("Dados limpos:", dados);
-    console.log("Ações limpas:", acoesTaxadas);
 
+    // Atualizar as tabelas e gráficos para refletir o estado limpo
     for (let secao = 1; secao <= 3; secao++) {
-        atualizarTabela(secao);  // Atualiza as tabelas com dados vazios
-        gerarGrafico(secao);  // Gera os gráficos vazios
+        // Redefinir a tabela para exibir os dados limpos
+        atualizarTabela(secao);
+        // Gerar gráficos vazios com dados limpos
+        gerarGrafico(secao);
     }
+
+    // Garantir que as variáveis de dados estejam vazias
+    console.log("LocalStorage foi limpo.");
+    console.log("Dados após limpar:", dados);
+    console.log("Ações após limpar:", acoesTaxadas);
 }
+
+function atualizarTabela(secao) {
+    const tabela = document.getElementById(`tabelaAcoes${secao}`);
+    const tbody = tabela.querySelector('tbody');
+    tbody.innerHTML = ''; // Limpa a tabela
+
+    dados[secao - 1].forEach((item, index) => {
+        const status = acoesTaxadas[secao - 1][index] ? 'Concluído' : 'Em andamento';
+        const buttonStyle = acoesTaxadas[secao - 1][index]
+            ? 'background-color: green; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;'
+            : 'background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${item.data}</td>
+            <td>${item.eficiencia}</td>
+            <td>${item.residuo}</td>
+            <td>
+                <span style="${acoesTaxadas[secao - 1][index] ? 'text-decoration: line-through;' : ''}">
+                    ${item.acoes}
+                </span>
+                <button style="${buttonStyle}" onclick="tacharAcao(${secao}, ${index})">
+                    Ação ${status}
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function gerarGrafico(secao) {
+    const ctx1 = document.getElementById(`chart${secao * 2 - 1}`).getContext('2d');
+    const ctx2 = document.getElementById(`chart${secao * 2}`).getContext('2d');
+
+    const eficiencia = dados[secao - 1].map(item => item.eficiencia);
+    const residuo = dados[secao - 1].map(item => item.residuo);
+
+    // Gráfico de Eficiência
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: dados[secao - 1].map(item => item.data),
+            datasets: [{
+                label: 'Eficiência',
+                data: eficiencia,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Gráfico de Resíduo
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: dados[secao - 1].map(item => item.data),
+            datasets: [{
+                label: 'Resíduo',
+                data: residuo,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Exibir a média
+    const mediaEficiencia = (eficiencia.reduce((a, b) => a + b, 0) / eficiencia.length).toFixed(2);
+    const mediaResiduo = (residuo.reduce((a, b) => a + b, 0) / residuo.length).toFixed(2);
+    document.getElementById(`media${secao * 2 - 1}`).innerHTML = `Média de Eficiência: ${mediaEficiencia}`;
+    document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
+}
+
 
     </script>
 
