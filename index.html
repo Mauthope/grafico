@@ -6,7 +6,7 @@
     <title>Dashboard de Eficiência e Resíduo</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-              body {
+                     body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
@@ -140,33 +140,32 @@
             font-weight: bold;
             font-size: 16px;
         }
-
-
     </style>
 </head>
 <body>
-
     <h1>Dashboard de Eficiência e Resíduo</h1>
     
     <div class="container">
         <!-- Seções de Entrada de Dados -->
+        <!-- Repetindo a mesma estrutura para 6 seções -->
+        ${[...Array(6)].map((_, i) => `
         <div class="section">
-            <h3>Seção 1</h3>
-            <input type="date" id="data1">
-            <input type="number" id="eficiencia1" placeholder="Eficiência">
-            <input type="number" id="residuo1" placeholder="Resíduo">
-            <textarea id="acoes1" placeholder="Ações"></textarea>
-            <button onclick="adicionarDados(1)">Adicionar</button>
+            <h3>Seção ${i + 1}</h3>
+            <input type="date" id="data${i + 1}">
+            <input type="number" id="eficiencia${i + 1}" placeholder="Eficiência">
+            <input type="number" id="residuo${i + 1}" placeholder="Resíduo">
+            <textarea id="acoes${i + 1}" placeholder="Ações"></textarea>
+            <button onclick="adicionarDados(${i + 1})">Adicionar</button>
             <div class="chart-container">
-                <canvas id="chart1"></canvas>
+                <canvas id="chart${i * 2 + 1}"></canvas>
             </div>
-            <div class="media-container" id="media1"></div>
+            <div class="media-container" id="media${i * 2 + 1}"></div>
             <div class="chart-container">
-                <canvas id="chart2"></canvas>
+                <canvas id="chart${i * 2 + 2}"></canvas>
             </div>
-            <div class="media-container" id="media2"></div>
+            <div class="media-container" id="media${i * 2 + 2}"></div>
             <h4>Ações</h4>
-            <table id="tabelaAcoes1">
+            <table id="tabelaAcoes${i + 1}">
                 <thead>
                     <tr>
                         <th>Data</th>
@@ -178,19 +177,19 @@
                 <tbody></tbody>
             </table>
         </div>
-
-        <!-- Seções 2 e 3 seguem a mesma estrutura, basta adicionar os elementos para média e gráficos -->
-        <!-- ... -->
+        `).join('')}
     </div>
 
     <button class="clear-button" onclick="limparLocalStorage()">Limpar Dados</button>
 
     <script>
-        let dados = [[], [], []];  
-        let acoesTaxadas = [[], [], []];  
+        // Ajustando para suportar até 6 seções
+        const TOTAL_SECOES = 6;
+        let dados = Array.from({ length: TOTAL_SECOES }, () => []);
+        let acoesTaxadas = Array.from({ length: TOTAL_SECOES }, () => []);
 
         window.onload = function() {
-            for (let secao = 0; secao < 3; secao++) {
+            for (let secao = 0; secao < TOTAL_SECOES; secao++) {
                 let savedData = JSON.parse(localStorage.getItem(`dadosSecao${secao + 1}`)) || [];
                 dados[secao] = savedData;
                 let savedActions = JSON.parse(localStorage.getItem(`acoesTaxadasSecao${secao + 1}`)) || [];
@@ -208,7 +207,7 @@
 
             if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
                 dados[secao - 1].push({ data, eficiencia, residuo, acoes });
-                acoesTaxadas[secao - 1].push(false); 
+                acoesTaxadas[secao - 1].push(false);
 
                 localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
                 localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
@@ -218,43 +217,38 @@
             }
         }
 
-  function atualizarTabela(secao) {
-    const tabela = document.getElementById(`tabelaAcoes${secao}`);
-    const tbody = tabela.querySelector('tbody');
-    tbody.innerHTML = '';
+        function atualizarTabela(secao) {
+            const tabela = document.getElementById(`tabelaAcoes${secao}`);
+            const tbody = tabela.querySelector('tbody');
+            tbody.innerHTML = '';
 
-    dados[secao - 1].forEach((item, index) => {
-        const status = acoesTaxadas[secao - 1][index] ? 'Concluído' : 'Em andamento';
-        const buttonStyle = acoesTaxadas[secao - 1][index]
-            ? 'background-color: green; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;'
-            : 'background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;';
+            dados[secao - 1].forEach((item, index) => {
+                const status = acoesTaxadas[secao - 1][index] ? 'Concluído' : 'Em andamento';
+                const buttonStyle = acoesTaxadas[secao - 1][index]
+                    ? 'background-color: green; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;'
+                    : 'background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;';
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${item.data}</td>
-            <td>${item.eficiencia}</td>
-            <td>${item.residuo}</td>
-            <td>
-                <span style="${acoesTaxadas[secao - 1][index] ? 'text-decoration: line-through;' : ''}">
-                    ${item.acoes}
-                </span>
-                <button style="${buttonStyle}" onclick="tacharAcao(${secao}, ${index})">
-                    Ação ${status}
-                </button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.data}</td>
+                    <td>${item.eficiencia}</td>
+                    <td>${item.residuo}</td>
+                    <td>
+                        <span style="${acoesTaxadas[secao - 1][index] ? 'text-decoration: line-through;' : ''}">
+                            ${item.acoes}
+                        </span>
+                        <button style="${buttonStyle}" onclick="tacharAcao(${secao}, ${index})">
+                            Ação ${status}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
         function tacharAcao(secao, index) {
-            const acoes = acoesTaxadas[secao - 1];
-            acoes[index] = !acoes[index]; 
-
-            localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoes));
-
+            acoesTaxadas[secao - 1][index] = !acoesTaxadas[secao - 1][index];
+            localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
             atualizarTabela(secao);
         }
 
@@ -265,7 +259,6 @@
             const eficiencia = dados[secao - 1].map(item => item.eficiencia);
             const residuo = dados[secao - 1].map(item => item.residuo);
 
-            // Gráfico de Eficiência
             new Chart(ctx1, {
                 type: 'bar',
                 data: {
@@ -278,15 +271,9 @@
                         borderWidth: 1
                     }]
                 },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
             });
 
-            // Gráfico de Resíduo
             new Chart(ctx2, {
                 type: 'bar',
                 data: {
@@ -299,33 +286,24 @@
                         borderWidth: 1
                     }]
                 },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
             });
 
-            // Exibir a média
-            const mediaEficiencia = (eficiencia.reduce((a, b) => a + b, 0) / eficiencia.length).toFixed(2);
-            const mediaResiduo = (residuo.reduce((a, b) => a + b, 0) / residuo.length).toFixed(2);
+            const mediaEficiencia = (eficiencia.reduce((a, b) => a + b, 0) / eficiencia.length || 0).toFixed(2);
+            const mediaResiduo = (residuo.reduce((a, b) => a + b, 0) / residuo.length || 0).toFixed(2);
             document.getElementById(`media${secao * 2 - 1}`).innerHTML = `Média de Eficiência: ${mediaEficiencia}`;
             document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
         }
 
         function limparLocalStorage() {
             localStorage.clear();
-            dados = [[], [], []];
-            acoesTaxadas = [[], [], []];
-            atualizarTabela(1);
-            atualizarTabela(2);
-            atualizarTabela(3);
-            gerarGrafico(1);
-            gerarGrafico(2);
-            gerarGrafico(3);
+            dados = Array.from({ length: TOTAL_SECOES }, () => []);
+            acoesTaxadas = Array.from({ length: TOTAL_SECOES }, () => []);
+            for (let secao = 1; secao <= TOTAL_SECOES; secao++) {
+                atualizarTabela(secao);
+                gerarGrafico(secao);
+            }
         }
     </script>
-
 </body>
 </html>
