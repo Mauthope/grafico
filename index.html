@@ -431,15 +431,21 @@
         document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
     }
 
-    function limparLocalStorage() {
-        localStorage.clear();
-        dados = [[], [], [], [], [], []];
-        acoesTaxadas = [[], [], [], [], [], []];
-        for (let i = 1; i <= 6; i++) {
-            atualizarTabela(i);
-            gerarGrafico(i);
-        }
+   function limparLocalStorage() {
+    // Limpar o localStorage
+    localStorage.clear();
+    
+    // Resetar as variáveis de dados e ações
+    dados = [[], [], []];
+    acoesTaxadas = [[], [], []];
+    
+    // Atualizar as tabelas e gráficos para refletir o estado limpo
+    for (let secao = 1; secao <= 3; secao++) {
+        atualizarTabela(secao);
+        gerarGrafico(secao);
     }
+}
+
 </script>
 
 
