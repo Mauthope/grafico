@@ -461,7 +461,7 @@
         document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
     }
 
-   function limparLocalStorage() {
+  function limparLocalStorage() {
     // Limpar o localStorage
     localStorage.clear();
     
@@ -470,13 +470,12 @@
     acoesTaxadas = [[], [], []];
     
     // Atualizar as tabelas e gráficos para refletir o estado limpo
+    // Não dependa de dados salvos no localStorage, atualize com os dados vazios
     for (let secao = 1; secao <= 3; secao++) {
-        atualizarTabela(secao);
-        gerarGrafico(secao);
+        atualizarTabela(secao);  // Atualiza as tabelas com dados vazios
+        gerarGrafico(secao);  // Gera os gráficos vazios
     }
 }
-
-
     </script>
 
 </body>
