@@ -140,6 +140,28 @@
             font-weight: bold;
             font-size: 16px;
         }
+        .botao-vermelho {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.botao-verde {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.botao-vermelho:hover, .botao-verde:hover {
+    opacity: 0.9;
+}
+
     </style>
 </head>
 <body>
@@ -216,26 +238,30 @@
             }
         }
 
-        function atualizarTabela(secao) {
-            const tabela = document.getElementById(`tabelaAcoes${secao}`);
-            const tbody = tabela.querySelector('tbody');
-            tbody.innerHTML = '';
-            dados[secao - 1].forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${item.data}</td>
-                    <td>${item.eficiencia}</td>
-                    <td>${item.residuo}</td>
-                    <td>
-                        <span class="${acoesTaxadas[secao - 1][index] ? 'taxado' : ''}">${item.acoes}</span>
-                        <button onclick="tacharAcao(${secao}, ${index})">
-                          Ação  ${acoesTaxadas[secao - 1][index] ? 'Em Andamento' : 'Concluído'} 
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+   function atualizarTabela(secao) {
+    const tabela = document.getElementById(`tabelaAcoes${secao}`);
+    const tbody = tabela.querySelector('tbody');
+    tbody.innerHTML = '';
+    dados[secao - 1].forEach((item, index) => {
+        const status = acoesTaxadas[secao - 1][index] ? 'Concluído' : 'Em andamento';
+        const statusClass = status === 'Concluído' ? 'botao-verde' : 'botao-vermelho';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${item.data}</td>
+            <td>${item.eficiencia}</td>
+            <td>${item.residuo}</td>
+            <td>
+                <span class="${acoesTaxadas[secao - 1][index] ? 'taxado' : ''}">${item.acoes}</span>
+                <button class="${statusClass}" onclick="tacharAcao(${secao}, ${index})">
+                  Ação ${status}
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
 
         function tacharAcao(secao, index) {
             const acoes = acoesTaxadas[secao - 1];
