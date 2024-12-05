@@ -409,33 +409,53 @@
         atualizarTabela(secao);
     }
 
-    function gerarGrafico(secao) {
-        const ctx1 = document.getElementById(`chart${secao * 2 - 1}`).getContext('2d');
-        const ctx2 = document.getElementById(`chart${secao * 2}`).getContext('2d');
+   function gerarGrafico(secao) {
+    let dadosSecao = dados[secao - 1] || []; // Certifique-se de que os dados existem
+    let ctx = document.getElementById(`graficoSecao${secao}`).getContext('2d');
 
-        const eficiencia = dados[secao - 1].map(item => item.eficiencia);
-        const residuo = dados[secao - 1].map(item => item.residuo);
-
-        // Gráfico de Eficiência
-        new Chart(ctx1, {
-            type: 'bar',
+    // Verifique se há dados para gerar o gráfico
+    if (dadosSecao.length === 0) {
+        // Se não houver dados, exiba um gráfico vazio ou de mensagem
+        new Chart(ctx, {
+            type: 'bar', // Tipo de gráfico
             data: {
-                labels: dados[secao - 1].map(item => item.data),
+                labels: ['Sem dados'],  // Mensagem de ausência de dados
                 datasets: [{
-                    label: 'Eficiência',
-                    data: eficiencia,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    label: 'Sem Dados',
+                    data: [0],  // Sem dados
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',  // Cor de fundo
+                    borderColor: 'rgba(255, 99, 132, 1)',  // Cor da borda
                     borderWidth: 1
                 }]
             },
             options: {
-                responsive: true,
                 scales: {
                     y: { beginAtZero: true }
                 }
             }
         });
+    } else {
+        // Caso haja dados, gere o gráfico normalmente
+        new Chart(ctx, {
+            type: 'bar', // Tipo de gráfico
+            data: {
+                labels: dadosSecao.map(d => d.nome), // Labels a partir dos dados
+                datasets: [{
+                    label: 'Valor',
+                    data: dadosSecao.map(d => d.valor),  // Dados do gráfico
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Cor de fundo
+                    borderColor: 'rgba(75, 192, 192, 1)',  // Cor da borda
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+}
 
         // Gráfico de Resíduo
         new Chart(ctx2, {
@@ -466,23 +486,21 @@
     }
 
 function limparTudo() {
-    // Limpa o localStorage para todas as seções
-    for (let i = 0; i < 6; i++) {
-        localStorage.removeItem(`dadosSecao${i + 1}`);
-        localStorage.removeItem(`acoesTaxadasSecao${i + 1}`);
+    // Limpar os dados do localStorage
+    for (let secao = 0; secao < 6; secao++) {
+        localStorage.removeItem(`dadosSecao${secao + 1}`);
+        localStorage.removeItem(`acoesTaxadasSecao${secao + 1}`);
     }
 
-    // Limpa os arrays em memória
+    // Limpar as variáveis de dados
     dados = [[], [], [], [], [], []];
     acoesTaxadas = [[], [], [], [], [], []];
 
-    // Atualiza as tabelas e gráficos
-    for (let i = 0; i < 6; i++) {
-        atualizarTabela(i + 1);
-        gerarGrafico(i + 1);
+    // Atualizar a tabela e os gráficos
+    for (let secao = 0; secao < 6; secao++) {
+        atualizarTabela(secao + 1);  // Atualiza as tabelas vazias
+        gerarGrafico(secao + 1);     // Gera gráficos vazios ou com dados padrão
     }
-
-    alert("Todos os dados foram limpos.");
 }
 
 
