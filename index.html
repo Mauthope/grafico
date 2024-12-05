@@ -6,7 +6,7 @@
     <title>Dashboard de Eficiência e Resíduo</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-              body {
+        body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
@@ -102,33 +102,6 @@
         .clear-button:hover {
             background-color: #e53935;
         }
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        @media (max-width: 500px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-        .taxado {
-            text-decoration: line-through;
-            color: red;
-        }
-        .clear-button {
-            background-color: #f44336;
-            color: white;
-            font-size: 18px;
-            margin: 20px auto;
-            display: block;
-            padding: 12px 30px;
-            border: none;
-            cursor: pointer;
-        }
-        .clear-button:hover {
-            background-color: #e53935;
-        }
         /* Estilos de gráficos e tabelas */
         .chart-container {
             width: 100%;
@@ -140,8 +113,6 @@
             font-weight: bold;
             font-size: 16px;
         }
-
-
     </style>
 </head>
 <body>
@@ -333,16 +304,15 @@
 
     <button class="clear-button" onclick="limparTudo()">Limpar Todos os Dados</button>
 
-    <script>
-  
+<script>
     let dados = [[], [], [], [], [], []];
     let acoesTaxadas = [[], [], [], [], [], []];
 
     window.onload = function() {
         for (let secao = 0; secao < 6; secao++) {
-            let savedData = JSON.parse(localStorage.getItem(dadosSecao${secao + 1})) || [];
+            let savedData = JSON.parse(localStorage.getItem(`dadosSecao${secao + 1}`)) || [];
             dados[secao] = savedData;
-            let savedActions = JSON.parse(localStorage.getItem(acoesTaxadasSecao${secao + 1})) || [];
+            let savedActions = JSON.parse(localStorage.getItem(`acoesTaxadasSecao${secao + 1}`)) || [];
             acoesTaxadas[secao] = savedActions;
             atualizarTabela(secao + 1);
             gerarGrafico(secao + 1);
@@ -350,17 +320,17 @@
     };
 
     function adicionarDados(secao) {
-        const data = document.getElementById(data${secao}).value;
-        const eficiencia = parseFloat(document.getElementById(eficiencia${secao}).value);
-        const residuo = parseFloat(document.getElementById(residuo${secao}).value);
-        const acoes = document.getElementById(acoes${secao}).value;
+        const data = document.getElementById(`data${secao}`).value;
+        const eficiencia = parseFloat(document.getElementById(`eficiencia${secao}`).value);
+        const residuo = parseFloat(document.getElementById(`residuo${secao}`).value);
+        const acoes = document.getElementById(`acoes${secao}`).value;
 
         if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
             dados[secao - 1].push({ data, eficiencia, residuo, acoes });
             acoesTaxadas[secao - 1].push(false); 
 
-            localStorage.setItem(dadosSecao${secao}, JSON.stringify(dados[secao - 1]));
-            localStorage.setItem(acoesTaxadasSecao${secao}, JSON.stringify(acoesTaxadas[secao - 1]));
+            localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
+            localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
 
             atualizarTabela(secao);
             gerarGrafico(secao);
@@ -368,7 +338,7 @@
     }
 
     function atualizarTabela(secao) {
-        const tabela = document.getElementById(tabelaAcoes${secao});
+        const tabela = document.getElementById(`tabelaAcoes${secao}`);
         const tbody = tabela.querySelector('tbody');
         tbody.innerHTML = '';
 
@@ -379,7 +349,7 @@
                 : 'background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;';
 
             const tr = document.createElement('tr');
-            tr.innerHTML = 
+            tr.innerHTML = `
                 <td>${item.data}</td>
                 <td>${item.eficiencia}</td>
                 <td>${item.residuo}</td>
@@ -391,7 +361,7 @@
                         Ação ${status}
                     </button>
                 </td>
-            ;
+            `;
             tbody.appendChild(tr);
         });
     }
@@ -400,14 +370,14 @@
         const acoes = acoesTaxadas[secao - 1];
         acoes[index] = !acoes[index]; 
 
-        localStorage.setItem(acoesTaxadasSecao${secao}, JSON.stringify(acoes));
+        localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoes));
 
         atualizarTabela(secao);
     }
 
     function gerarGrafico(secao) {
-        const ctx1 = document.getElementById(chart${secao * 2 - 1}).getContext('2d');
-        const ctx2 = document.getElementById(chart${secao * 2}).getContext('2d');
+        const ctx1 = document.getElementById(`chart${secao * 2 - 1}`).getContext('2d');
+        const ctx2 = document.getElementById(`chart${secao * 2}`).getContext('2d');
 
         const eficiencia = dados[secao - 1].map(item => item.eficiencia);
         const residuo = dados[secao - 1].map(item => item.residuo);
@@ -457,29 +427,29 @@
         // Exibir a média
         const mediaEficiencia = (eficiencia.reduce((a, b) => a + b, 0) / eficiencia.length).toFixed(2);
         const mediaResiduo = (residuo.reduce((a, b) => a + b, 0) / residuo.length).toFixed(2);
-        document.getElementById(media${secao * 2 - 1}).innerHTML = Média de Eficiência: ${mediaEficiencia};
-        document.getElementById(media${secao * 2}).innerHTML = Média de Resíduo: ${mediaResiduo};
+        document.getElementById(`media${secao * 2 - 1}`).innerHTML = `Média de Eficiência: ${mediaEficiencia}`;
+        document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
     }
 
 function limparLocalStorage() {
-    // Limpar o localStorage
-    localStorage.clear();
-    
-    // Resetar as variáveis de dados e ações
-    dados = [[], [], [], [], [], []];  // 6 seções de dados
-    acoesTaxadas = [[], [], [], [], [], []];  // 6 seções de ações
-
-    // Atualizar as tabelas e gráficos para refletir o estado limpo para todas as seções
-    for (let secao = 1; secao <= 6; secao++) {
-        atualizarTabela(secao);
-        gerarGrafico(secao);
+            localStorage.clear();
+         dados = [[], [], [], [], [], []]; // 6 seções
+    acoesTaxadas = [[], [], [], [], [], []]; // 6 seções
+            atualizarTabela(1);
+            atualizarTabela(2);
+            atualizarTabela(3);
+                atualizarTabela(4);
+            atualizarTabela(5);
+            atualizarTabela(6);
+            gerarGrafico(1);
+            gerarGrafico(2);
+            gerarGrafico(3);
+             gerarGrafico(4);
+            gerarGrafico(5);
+            gerarGrafico(6);
+        }
     }
-}
-
-
-
-
-    </script>
+</script>
 
 </body>
 </html>
