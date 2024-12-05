@@ -431,25 +431,17 @@
         document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
     }
 
-function limparLocalStorage() {
-            localStorage.clear();
-         dados = [[], [], [], [], [], []]; // 6 seções
-    acoesTaxadas = [[], [], [], [], [], []]; // 6 seções
-            atualizarTabela(1);
-            atualizarTabela(2);
-            atualizarTabela(3);
-                atualizarTabela(4);
-            atualizarTabela(5);
-            atualizarTabela(6);
-            gerarGrafico(1);
-            gerarGrafico(2);
-            gerarGrafico(3);
-             gerarGrafico(4);
-            gerarGrafico(5);
-            gerarGrafico(6);
+    function limparLocalStorage() {
+        localStorage.clear();
+        dados = [[], [], [], [], [], []];
+        acoesTaxadas = [[], [], [], [], [], []];
+        for (let i = 1; i <= 6; i++) {
+            atualizarTabela(i);
+            gerarGrafico(i);
         }
     }
 </script>
+
 
 </body>
 </html>
