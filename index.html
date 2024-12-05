@@ -6,7 +6,7 @@
     <title>Dashboard de Eficiência e Resíduo</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-       body {
+              body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
@@ -112,6 +112,34 @@
                 grid-template-columns: 1fr;
             }
         }
+        .taxado {
+            text-decoration: line-through;
+            color: red;
+        }
+        .clear-button {
+            background-color: #f44336;
+            color: white;
+            font-size: 18px;
+            margin: 20px auto;
+            display: block;
+            padding: 12px 30px;
+            border: none;
+            cursor: pointer;
+        }
+        .clear-button:hover {
+            background-color: #e53935;
+        }
+        /* Estilos de gráficos e tabelas */
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+        }
+        .media-container {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -178,7 +206,7 @@
 
             if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
                 dados[secao - 1].push({ data, eficiencia, residuo, acoes });
-                acoesTaxadas[secao - 1].push([]); 
+                acoesTaxadas[secao - 1].push(false); 
 
                 localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
                 localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
@@ -199,7 +227,10 @@
                     <td>${item.eficiencia}</td>
                     <td>${item.residuo}</td>
                     <td>
-                        <button onclick="tacharAcao(${secao}, ${index})">${acoesTaxadas[secao - 1][index].length ? 'Desmarcar' : 'Marcar'} Ação</button>
+                        <span class="${acoesTaxadas[secao - 1][index] ? 'taxado' : ''}">${item.acoes}</span>
+                        <button onclick="tacharAcao(${secao}, ${index})">
+                            ${acoesTaxadas[secao - 1][index] ? 'Desmarcar' : 'Marcar'} Ação
+                        </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -208,12 +239,7 @@
 
         function tacharAcao(secao, index) {
             const acoes = acoesTaxadas[secao - 1];
-            const acaoIndex = acoes[index].length;
-            if (acaoIndex) {
-                acoes[index].pop(); 
-            } else {
-                acoes[index].push(true); 
-            }
+            acoes[index] = !acoes[index]; 
 
             localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoes));
 
