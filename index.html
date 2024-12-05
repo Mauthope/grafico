@@ -461,26 +461,26 @@
         document.getElementById(media${secao * 2}).innerHTML = Média de Resíduo: ${mediaResiduo};
     }
 
-function limparTudo() {
-    // Limpar os dados do localStorage
-    for (let secao = 0; secao < 6; secao++) {
-        localStorage.removeItem(`dadosSecao${secao + 1}`);
-        localStorage.removeItem(`acoesTaxadasSecao${secao + 1}`);
-    }
+function limparSecao(secao) {
+    // Limpar o localStorage para a seção específica
+    localStorage.removeItem(`dadosSecao${secao}`);
+    localStorage.removeItem(`acoesTaxadasSecao${secao}`);
 
-    // Limpar as variáveis de dados
-    dados = [[], [], [], [], [], []];
-    acoesTaxadas = [[], [], [], [], [], []];
+    // Resetar os dados da seção específica
+    dados[secao - 1] = [];
+    acoesTaxadas[secao - 1] = [];
 
-    // Atualizar a tabela e os gráficos
-    for (let secao = 0; secao < 6; secao++) {
-        atualizarTabela(secao + 1);  // Atualiza as tabelas vazias
-        gerarGrafico(secao + 1);     // Gera gráficos vazios ou com dados padrão
-    }
+    // Atualizar a tabela e o gráfico da seção
+    atualizarTabela(secao);
+    gerarGrafico(secao);
 }
 
-
-
+function limparTudo() {
+    // Limpar todas as seções de uma vez
+    for (let secao = 1; secao <= 6; secao++) {
+        limparSecao(secao);
+    }
+}
 
     </script>
 
