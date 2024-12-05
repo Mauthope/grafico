@@ -239,7 +239,7 @@
                 <tbody></tbody>
             </table>
         </div>
-
+<hr class="linha-divisoria">
         <!-- Seção 4 -->
         <div class="section">
             <h3>Seção 4</h3>
@@ -461,19 +461,24 @@
         document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
     }
 
-function limparLocalStorage() {
-    // Limpar o localStorage
-    localStorage.clear();
-    
-    // Resetar as variáveis de dados e ações
-    dados = [[], [], [], [], [], []];  // 6 seções de dados
-    acoesTaxadas = [[], [], [], [], [], []];  // 6 seções de ações
-
-    // Atualizar as tabelas e gráficos para refletir o estado limpo para todas as seções
-    for (let secao = 1; secao <= 6; secao++) {
-        atualizarTabela(secao);
-        gerarGrafico(secao);
+function limparTudo() {
+    // Limpa o localStorage para todas as seções
+    for (let i = 0; i < 6; i++) {
+        localStorage.removeItem(`dadosSecao${i + 1}`);
+        localStorage.removeItem(`acoesTaxadasSecao${i + 1}`);
     }
+
+    // Limpa os arrays em memória
+    dados = [[], [], [], [], [], []];
+    acoesTaxadas = [[], [], [], [], [], []];
+
+    // Atualiza as tabelas e gráficos
+    for (let i = 0; i < 6; i++) {
+        atualizarTabela(i + 1);
+        gerarGrafico(i + 1);
+    }
+
+    alert("Todos os dados foram limpos.");
 }
 
 
