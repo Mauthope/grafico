@@ -464,24 +464,18 @@
 function limparLocalStorage() {
     // Limpar o localStorage
     localStorage.clear();
+    
+    // Resetar as variáveis de dados e ações
+    dados = [[], [], [], [], [], []];  // 6 seções de dados
+    acoesTaxadas = [[], [], [], [], [], []];  // 6 seções de ações
 
-    // Limpar os dados e ações para cada seção
-    dados[0] = [];
-    dados[1] = [];
-    dados[2] = [];
-
-    acoesTaxadas[0] = [];
-    acoesTaxadas[1] = [];
-    acoesTaxadas[2] = [];
-
-    // Atualizar as tabelas e gráficos para refletir o estado limpo
-    atualizarTabela(1);
-    atualizarTabela(2);
-    atualizarTabela(3);
-    gerarGrafico(1);
-    gerarGrafico(2);
-    gerarGrafico(3);
+    // Atualizar as tabelas e gráficos para refletir o estado limpo para todas as seções
+    for (let secao = 1; secao <= 6; secao++) {
+        atualizarTabela(secao);
+        gerarGrafico(secao);
+    }
 }
+
 
 
 
