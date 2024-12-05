@@ -6,7 +6,7 @@
     <title>Dashboard de Eficiência e Resíduo</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-                     body {
+              body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
@@ -140,32 +140,34 @@
             font-weight: bold;
             font-size: 16px;
         }
+
+
     </style>
 </head>
 <body>
+
     <h1>Dashboard de Eficiência e Resíduo</h1>
     
     <div class="container">
         <!-- Seções de Entrada de Dados -->
-        <!-- Repetindo a mesma estrutura para 6 seções -->
-        ${[...Array(6)].map((_, i) => `
+        <!-- Seção 1 -->
         <div class="section">
-            <h3>Seção ${i + 1}</h3>
-            <input type="date" id="data${i + 1}">
-            <input type="number" id="eficiencia${i + 1}" placeholder="Eficiência">
-            <input type="number" id="residuo${i + 1}" placeholder="Resíduo">
-            <textarea id="acoes${i + 1}" placeholder="Ações"></textarea>
-            <button onclick="adicionarDados(${i + 1})">Adicionar</button>
+            <h3>Seção 1</h3>
+            <input type="date" id="data1">
+            <input type="number" id="eficiencia1" placeholder="Eficiência">
+            <input type="number" id="residuo1" placeholder="Resíduo">
+            <textarea id="acoes1" placeholder="Ações"></textarea>
+            <button onclick="adicionarDados(1)">Adicionar</button>
             <div class="chart-container">
-                <canvas id="chart${i * 2 + 1}"></canvas>
+                <canvas id="chart1"></canvas>
             </div>
-            <div class="media-container" id="media${i * 2 + 1}"></div>
+            <div class="media-container" id="media1"></div>
             <div class="chart-container">
-                <canvas id="chart${i * 2 + 2}"></canvas>
+                <canvas id="chart2"></canvas>
             </div>
-            <div class="media-container" id="media${i * 2 + 2}"></div>
+            <div class="media-container" id="media2"></div>
             <h4>Ações</h4>
-            <table id="tabelaAcoes${i + 1}">
+            <table id="tabelaAcoes1">
                 <thead>
                     <tr>
                         <th>Data</th>
@@ -177,133 +179,300 @@
                 <tbody></tbody>
             </table>
         </div>
-        `).join('')}
+
+        <!-- Seção 2 -->
+        <div class="section">
+            <h3>Seção 2</h3>
+            <input type="date" id="data2">
+            <input type="number" id="eficiencia2" placeholder="Eficiência">
+            <input type="number" id="residuo2" placeholder="Resíduo">
+            <textarea id="acoes2" placeholder="Ações"></textarea>
+            <button onclick="adicionarDados(2)">Adicionar</button>
+            <div class="chart-container">
+                <canvas id="chart3"></canvas>
+            </div>
+            <div class="media-container" id="media3"></div>
+            <div class="chart-container">
+                <canvas id="chart4"></canvas>
+            </div>
+            <div class="media-container" id="media4"></div>
+            <h4>Ações</h4>
+            <table id="tabelaAcoes2">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Eficiência</th>
+                        <th>Resíduo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Seção 3 -->
+        <div class="section">
+            <h3>Seção 3</h3>
+            <input type="date" id="data3">
+            <input type="number" id="eficiencia3" placeholder="Eficiência">
+            <input type="number" id="residuo3" placeholder="Resíduo">
+            <textarea id="acoes3" placeholder="Ações"></textarea>
+            <button onclick="adicionarDados(3)">Adicionar</button>
+            <div class="chart-container">
+                <canvas id="chart5"></canvas>
+            </div>
+            <div class="media-container" id="media5"></div>
+            <div class="chart-container">
+                <canvas id="chart6"></canvas>
+            </div>
+            <div class="media-container" id="media6"></div>
+            <h4>Ações</h4>
+            <table id="tabelaAcoes3">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Eficiência</th>
+                        <th>Resíduo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Seção 4 -->
+        <div class="section">
+            <h3>Seção 4</h3>
+            <input type="date" id="data4">
+            <input type="number" id="eficiencia4" placeholder="Eficiência">
+            <input type="number" id="residuo4" placeholder="Resíduo">
+            <textarea id="acoes4" placeholder="Ações"></textarea>
+            <button onclick="adicionarDados(4)">Adicionar</button>
+            <div class="chart-container">
+                <canvas id="chart7"></canvas>
+            </div>
+            <div class="media-container" id="media7"></div>
+            <div class="chart-container">
+                <canvas id="chart8"></canvas>
+            </div>
+            <div class="media-container" id="media8"></div>
+            <h4>Ações</h4>
+            <table id="tabelaAcoes4">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Eficiência</th>
+                        <th>Resíduo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Seção 5 -->
+        <div class="section">
+            <h3>Seção 5</h3>
+            <input type="date" id="data5">
+            <input type="number" id="eficiencia5" placeholder="Eficiência">
+            <input type="number" id="residuo5" placeholder="Resíduo">
+            <textarea id="acoes5" placeholder="Ações"></textarea>
+            <button onclick="adicionarDados(5)">Adicionar</button>
+            <div class="chart-container">
+                <canvas id="chart9"></canvas>
+            </div>
+            <div class="media-container" id="media9"></div>
+            <div class="chart-container">
+                <canvas id="chart10"></canvas>
+            </div>
+            <div class="media-container" id="media10"></div>
+            <h4>Ações</h4>
+            <table id="tabelaAcoes5">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Eficiência</th>
+                        <th>Resíduo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Seção 6 -->
+        <div class="section">
+            <h3>Seção 6</h3>
+            <input type="date" id="data6">
+            <input type="number" id="eficiencia6" placeholder="Eficiência">
+            <input type="number" id="residuo6" placeholder="Resíduo">
+            <textarea id="acoes6" placeholder="Ações"></textarea>
+            <button onclick="adicionarDados(6)">Adicionar</button>
+            <div class="chart-container">
+                <canvas id="chart11"></canvas>
+            </div>
+            <div class="media-container" id="media11"></div>
+            <div class="chart-container">
+                <canvas id="chart12"></canvas>
+            </div>
+            <div class="media-container" id="media12"></div>
+            <h4>Ações</h4>
+            <table id="tabelaAcoes6">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Eficiência</th>
+                        <th>Resíduo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
-    <button class="clear-button" onclick="limparLocalStorage()">Limpar Dados</button>
+    <button class="clear-button" onclick="limparTudo()">Limpar Todos os Dados</button>
 
     <script>
-        // Ajustando para suportar até 6 seções
-        const TOTAL_SECOES = 6;
-        let dados = Array.from({ length: TOTAL_SECOES }, () => []);
-        let acoesTaxadas = Array.from({ length: TOTAL_SECOES }, () => []);
+  
+    let dados = [[], [], [], [], [], []];
+    let acoesTaxadas = [[], [], [], [], [], []];
 
-        window.onload = function() {
-            for (let secao = 0; secao < TOTAL_SECOES; secao++) {
-                let savedData = JSON.parse(localStorage.getItem(`dadosSecao${secao + 1}`)) || [];
-                dados[secao] = savedData;
-                let savedActions = JSON.parse(localStorage.getItem(`acoesTaxadasSecao${secao + 1}`)) || [];
-                acoesTaxadas[secao] = savedActions;
-                atualizarTabela(secao + 1);
-                gerarGrafico(secao + 1);
-            }
-        };
-
-        function adicionarDados(secao) {
-            const data = document.getElementById(`data${secao}`).value;
-            const eficiencia = parseFloat(document.getElementById(`eficiencia${secao}`).value);
-            const residuo = parseFloat(document.getElementById(`residuo${secao}`).value);
-            const acoes = document.getElementById(`acoes${secao}`).value;
-
-            if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
-                dados[secao - 1].push({ data, eficiencia, residuo, acoes });
-                acoesTaxadas[secao - 1].push(false);
-
-                localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
-                localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
-
-                atualizarTabela(secao);
-                gerarGrafico(secao);
-            }
+    window.onload = function() {
+        for (let secao = 0; secao < 6; secao++) {
+            let savedData = JSON.parse(localStorage.getItem(`dadosSecao${secao + 1}`)) || [];
+            dados[secao] = savedData;
+            let savedActions = JSON.parse(localStorage.getItem(`acoesTaxadasSecao${secao + 1}`)) || [];
+            acoesTaxadas[secao] = savedActions;
+            atualizarTabela(secao + 1);
+            gerarGrafico(secao + 1);
         }
+    };
 
-        function atualizarTabela(secao) {
-            const tabela = document.getElementById(`tabelaAcoes${secao}`);
-            const tbody = tabela.querySelector('tbody');
-            tbody.innerHTML = '';
+    function adicionarDados(secao) {
+        const data = document.getElementById(`data${secao}`).value;
+        const eficiencia = parseFloat(document.getElementById(`eficiencia${secao}`).value);
+        const residuo = parseFloat(document.getElementById(`residuo${secao}`).value);
+        const acoes = document.getElementById(`acoes${secao}`).value;
 
-            dados[secao - 1].forEach((item, index) => {
-                const status = acoesTaxadas[secao - 1][index] ? 'Concluído' : 'Em andamento';
-                const buttonStyle = acoesTaxadas[secao - 1][index]
-                    ? 'background-color: green; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;'
-                    : 'background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;';
+        if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
+            dados[secao - 1].push({ data, eficiencia, residuo, acoes });
+            acoesTaxadas[secao - 1].push(false); 
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${item.data}</td>
-                    <td>${item.eficiencia}</td>
-                    <td>${item.residuo}</td>
-                    <td>
-                        <span style="${acoesTaxadas[secao - 1][index] ? 'text-decoration: line-through;' : ''}">
-                            ${item.acoes}
-                        </span>
-                        <button style="${buttonStyle}" onclick="tacharAcao(${secao}, ${index})">
-                            Ação ${status}
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function tacharAcao(secao, index) {
-            acoesTaxadas[secao - 1][index] = !acoesTaxadas[secao - 1][index];
+            localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
             localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
+
             atualizarTabela(secao);
+            gerarGrafico(secao);
         }
+    }
 
-        function gerarGrafico(secao) {
-            const ctx1 = document.getElementById(`chart${secao * 2 - 1}`).getContext('2d');
-            const ctx2 = document.getElementById(`chart${secao * 2}`).getContext('2d');
+    function atualizarTabela(secao) {
+        const tabela = document.getElementById(`tabelaAcoes${secao}`);
+        const tbody = tabela.querySelector('tbody');
+        tbody.innerHTML = '';
 
-            const eficiencia = dados[secao - 1].map(item => item.eficiencia);
-            const residuo = dados[secao - 1].map(item => item.residuo);
+        dados[secao - 1].forEach((item, index) => {
+            const status = acoesTaxadas[secao - 1][index] ? 'Concluído' : 'Em andamento';
+            const buttonStyle = acoesTaxadas[secao - 1][index]
+                ? 'background-color: green; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;'
+                : 'background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;';
 
-            new Chart(ctx1, {
-                type: 'bar',
-                data: {
-                    labels: dados[secao - 1].map(item => item.data),
-                    datasets: [{
-                        label: 'Eficiência',
-                        data: eficiencia,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: { responsive: true, scales: { y: { beginAtZero: true } } }
-            });
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.data}</td>
+                <td>${item.eficiencia}</td>
+                <td>${item.residuo}</td>
+                <td>
+                    <span style="${acoesTaxadas[secao - 1][index] ? 'text-decoration: line-through;' : ''}">
+                        ${item.acoes}
+                    </span>
+                    <button style="${buttonStyle}" onclick="tacharAcao(${secao}, ${index})">
+                        Ação ${status}
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
 
-            new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: dados[secao - 1].map(item => item.data),
-                    datasets: [{
-                        label: 'Resíduo',
-                        data: residuo,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: { responsive: true, scales: { y: { beginAtZero: true } } }
-            });
+    function tacharAcao(secao, index) {
+        const acoes = acoesTaxadas[secao - 1];
+        acoes[index] = !acoes[index]; 
 
-            const mediaEficiencia = (eficiencia.reduce((a, b) => a + b, 0) / eficiencia.length || 0).toFixed(2);
-            const mediaResiduo = (residuo.reduce((a, b) => a + b, 0) / residuo.length || 0).toFixed(2);
-            document.getElementById(`media${secao * 2 - 1}`).innerHTML = `Média de Eficiência: ${mediaEficiencia}`;
-            document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
-        }
+        localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoes));
 
-        function limparLocalStorage() {
-            localStorage.clear();
-            dados = Array.from({ length: TOTAL_SECOES }, () => []);
-            acoesTaxadas = Array.from({ length: TOTAL_SECOES }, () => []);
-            for (let secao = 1; secao <= TOTAL_SECOES; secao++) {
-                atualizarTabela(secao);
-                gerarGrafico(secao);
+        atualizarTabela(secao);
+    }
+
+    function gerarGrafico(secao) {
+        const ctx1 = document.getElementById(`chart${secao * 2 - 1}`).getContext('2d');
+        const ctx2 = document.getElementById(`chart${secao * 2}`).getContext('2d');
+
+        const eficiencia = dados[secao - 1].map(item => item.eficiencia);
+        const residuo = dados[secao - 1].map(item => item.residuo);
+
+        // Gráfico de Eficiência
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: dados[secao - 1].map(item => item.data),
+                datasets: [{
+                    label: 'Eficiência',
+                    data: eficiencia,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
             }
+        });
+
+        // Gráfico de Resíduo
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: dados[secao - 1].map(item => item.data),
+                datasets: [{
+                    label: 'Resíduo',
+                    data: residuo,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Exibir a média
+        const mediaEficiencia = (eficiencia.reduce((a, b) => a + b, 0) / eficiencia.length).toFixed(2);
+        const mediaResiduo = (residuo.reduce((a, b) => a + b, 0) / residuo.length).toFixed(2);
+        document.getElementById(`media${secao * 2 - 1}`).innerHTML = `Média de Eficiência: ${mediaEficiencia}`;
+        document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
+    }
+
+    function limparLocalStorage() {
+        localStorage.clear();
+        dados = [[], [], [], [], [], []];
+        acoesTaxadas = [[], [], [], [], [], []];
+        for (let i = 1; i <= 6; i++) {
+            atualizarTabela(i);
+            gerarGrafico(i);
         }
+    }
+
+
     </script>
+
 </body>
 </html>
