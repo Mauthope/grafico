@@ -466,22 +466,25 @@
     }
 
 function limparTudo() {
-    // Limpar os dados no localStorage para todas as seções
-    for (let secao = 0; secao < 6; secao++) {
-        localStorage.removeItem(`dadosSecao${secao + 1}`);
-        localStorage.removeItem(`acoesTaxadasSecao${secao + 1}`);
+    // Limpa o localStorage para todas as seções
+    for (let i = 0; i < 6; i++) {
+        localStorage.removeItem(`dadosSecao${i + 1}`);
+        localStorage.removeItem(`acoesTaxadasSecao${i + 1}`);
     }
 
-    // Limpar as variáveis de dados
+    // Limpa os arrays em memória
     dados = [[], [], [], [], [], []];
     acoesTaxadas = [[], [], [], [], [], []];
 
-    // Atualizar a tabela para refletir a limpeza
-    for (let secao = 0; secao < 6; secao++) {
-        atualizarTabela(secao + 1);
-        gerarGrafico(secao + 1);
+    // Atualiza as tabelas e gráficos
+    for (let i = 0; i < 6; i++) {
+        atualizarTabela(i + 1);
+        gerarGrafico(i + 1);
     }
+
+    alert("Todos os dados foram limpos.");
 }
+
 
 
 
