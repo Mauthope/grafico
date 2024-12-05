@@ -141,11 +141,7 @@
             font-size: 16px;
         }
 
-.linha-divisoria {
-    border: none;
-    border-top: 2px solid #ccc;
-    margin: 20px 0;
-}
+
     </style>
 </head>
 <body>
@@ -243,7 +239,7 @@
                 <tbody></tbody>
             </table>
         </div>
-<hr class="linha-divisoria">
+
         <!-- Seção 4 -->
         <div class="section">
             <h3>Seção 4</h3>
@@ -344,9 +340,9 @@
 
     window.onload = function() {
         for (let secao = 0; secao < 6; secao++) {
-            let savedData = JSON.parse(localStorage.getItem(`dadosSecao${secao + 1}`)) || [];
+            let savedData = JSON.parse(localStorage.getItem(dadosSecao${secao + 1})) || [];
             dados[secao] = savedData;
-            let savedActions = JSON.parse(localStorage.getItem(`acoesTaxadasSecao${secao + 1}`)) || [];
+            let savedActions = JSON.parse(localStorage.getItem(acoesTaxadasSecao${secao + 1})) || [];
             acoesTaxadas[secao] = savedActions;
             atualizarTabela(secao + 1);
             gerarGrafico(secao + 1);
@@ -354,17 +350,17 @@
     };
 
     function adicionarDados(secao) {
-        const data = document.getElementById(`data${secao}`).value;
-        const eficiencia = parseFloat(document.getElementById(`eficiencia${secao}`).value);
-        const residuo = parseFloat(document.getElementById(`residuo${secao}`).value);
-        const acoes = document.getElementById(`acoes${secao}`).value;
+        const data = document.getElementById(data${secao}).value;
+        const eficiencia = parseFloat(document.getElementById(eficiencia${secao}).value);
+        const residuo = parseFloat(document.getElementById(residuo${secao}).value);
+        const acoes = document.getElementById(acoes${secao}).value;
 
         if (data && !isNaN(eficiencia) && !isNaN(residuo)) {
             dados[secao - 1].push({ data, eficiencia, residuo, acoes });
             acoesTaxadas[secao - 1].push(false); 
 
-            localStorage.setItem(`dadosSecao${secao}`, JSON.stringify(dados[secao - 1]));
-            localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoesTaxadas[secao - 1]));
+            localStorage.setItem(dadosSecao${secao}, JSON.stringify(dados[secao - 1]));
+            localStorage.setItem(acoesTaxadasSecao${secao}, JSON.stringify(acoesTaxadas[secao - 1]));
 
             atualizarTabela(secao);
             gerarGrafico(secao);
@@ -372,7 +368,7 @@
     }
 
     function atualizarTabela(secao) {
-        const tabela = document.getElementById(`tabelaAcoes${secao}`);
+        const tabela = document.getElementById(tabelaAcoes${secao});
         const tbody = tabela.querySelector('tbody');
         tbody.innerHTML = '';
 
@@ -383,7 +379,7 @@
                 : 'background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;';
 
             const tr = document.createElement('tr');
-            tr.innerHTML = `
+            tr.innerHTML = 
                 <td>${item.data}</td>
                 <td>${item.eficiencia}</td>
                 <td>${item.residuo}</td>
@@ -395,7 +391,7 @@
                         Ação ${status}
                     </button>
                 </td>
-            `;
+            ;
             tbody.appendChild(tr);
         });
     }
@@ -404,58 +400,38 @@
         const acoes = acoesTaxadas[secao - 1];
         acoes[index] = !acoes[index]; 
 
-        localStorage.setItem(`acoesTaxadasSecao${secao}`, JSON.stringify(acoes));
+        localStorage.setItem(acoesTaxadasSecao${secao}, JSON.stringify(acoes));
 
         atualizarTabela(secao);
     }
 
-   function gerarGrafico(secao) {
-    let dadosSecao = dados[secao - 1] || []; // Certifique-se de que os dados existem
-    let ctx = document.getElementById(`graficoSecao${secao}`).getContext('2d');
+    function gerarGrafico(secao) {
+        const ctx1 = document.getElementById(chart${secao * 2 - 1}).getContext('2d');
+        const ctx2 = document.getElementById(chart${secao * 2}).getContext('2d');
 
-    // Verifique se há dados para gerar o gráfico
-    if (dadosSecao.length === 0) {
-        // Se não houver dados, exiba um gráfico vazio ou de mensagem
-        new Chart(ctx, {
-            type: 'bar', // Tipo de gráfico
+        const eficiencia = dados[secao - 1].map(item => item.eficiencia);
+        const residuo = dados[secao - 1].map(item => item.residuo);
+
+        // Gráfico de Eficiência
+        new Chart(ctx1, {
+            type: 'bar',
             data: {
-                labels: ['Sem dados'],  // Mensagem de ausência de dados
+                labels: dados[secao - 1].map(item => item.data),
                 datasets: [{
-                    label: 'Sem Dados',
-                    data: [0],  // Sem dados
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',  // Cor de fundo
-                    borderColor: 'rgba(255, 99, 132, 1)',  // Cor da borda
+                    label: 'Eficiência',
+                    data: eficiencia,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1
                 }]
             },
             options: {
+                responsive: true,
                 scales: {
                     y: { beginAtZero: true }
                 }
             }
         });
-    } else {
-        // Caso haja dados, gere o gráfico normalmente
-        new Chart(ctx, {
-            type: 'bar', // Tipo de gráfico
-            data: {
-                labels: dadosSecao.map(d => d.nome), // Labels a partir dos dados
-                datasets: [{
-                    label: 'Valor',
-                    data: dadosSecao.map(d => d.valor),  // Dados do gráfico
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Cor de fundo
-                    borderColor: 'rgba(75, 192, 192, 1)',  // Cor da borda
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-    }
-}
 
         // Gráfico de Resíduo
         new Chart(ctx2, {
@@ -481,8 +457,8 @@
         // Exibir a média
         const mediaEficiencia = (eficiencia.reduce((a, b) => a + b, 0) / eficiencia.length).toFixed(2);
         const mediaResiduo = (residuo.reduce((a, b) => a + b, 0) / residuo.length).toFixed(2);
-        document.getElementById(`media${secao * 2 - 1}`).innerHTML = `Média de Eficiência: ${mediaEficiencia}`;
-        document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
+        document.getElementById(media${secao * 2 - 1}).innerHTML = Média de Eficiência: ${mediaEficiencia};
+        document.getElementById(media${secao * 2}).innerHTML = Média de Resíduo: ${mediaResiduo};
     }
 
 function limparTudo() {
