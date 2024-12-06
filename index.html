@@ -343,7 +343,10 @@
         const tbody = tabela.querySelector('tbody');
         tbody.innerHTML = '';
 
-        dados[secao - 1].forEach((item, index) => {
+        // Filtra os dados para exibir apenas os que possuem algo no campo "acao"
+        const dadosFiltrados = dados[secao - 1].filter(item => item.acoes && item.acoes.trim() !== '');
+
+        dadosFiltrados.forEach((item, index) => {
             const status = acoesTaxadas[secao - 1][index] ? 'Concluído' : 'Em andamento';
             const buttonStyle = acoesTaxadas[secao - 1][index]
                 ? 'background-color: green; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;'
@@ -380,6 +383,7 @@
         const ctx1 = document.getElementById(`chart${secao * 2 - 1}`).getContext('2d');
         const ctx2 = document.getElementById(`chart${secao * 2}`).getContext('2d');
 
+        // Gráfico deve incluir todos os dados, mesmo aqueles sem "acao" preenchido
         const eficiencia = dados[secao - 1].map(item => item.eficiencia);
         const residuo = dados[secao - 1].map(item => item.residuo);
 
@@ -432,22 +436,22 @@
         document.getElementById(`media${secao * 2}`).innerHTML = `Média de Resíduo: ${mediaResiduo}`;
     }
 
-function limparSecao(secao) {
-    localStorage.removeItem(`dadosSecao${secao}`);
-    localStorage.removeItem(`acoesTaxadasSecao${secao}`);
-    dados[secao - 1] = [];
-    acoesTaxadas[secao - 1] = [];
-    atualizarTabela(secao);
-    gerarGrafico(secao);
-    alert(`Os dados da seção ${secao} foram limpos.`);
-}
-
-function limparTudo() {
-    for (let secao = 1; secao <= 6; secao++) {
-        limparSecao(secao);
+    function limparSecao(secao) {
+        localStorage.removeItem(`dadosSecao${secao}`);
+        localStorage.removeItem(`acoesTaxadasSecao${secao}`);
+        dados[secao - 1] = [];
+        acoesTaxadas[secao - 1] = [];
+        atualizarTabela(secao);
+        gerarGrafico(secao);
+        alert(`Os dados da seção ${secao} foram limpos.`);
     }
-    alert("Todos os dados foram limpos.");
-}
+
+    function limparTudo() {
+        for (let secao = 1; secao <= 6; secao++) {
+            limparSecao(secao);
+        }
+        alert("Todos os dados foram limpos.");
+    }
 
 </script>
 
