@@ -19,7 +19,7 @@
             background-color: #4CAF50;
             color: white;
         }
-    .container {
+        .container {
     display: flex; /* Mudança para exibir as seções lado a lado */
     gap: 20px;
     overflow-x: auto; /* Adiciona rolagem horizontal */
@@ -39,55 +39,71 @@
     min-width: 300px; /* Define uma largura mínima para cada seção */
     flex-shrink: 0; /* Impede que a seção encolha */
 }
-
-.chart-container {
-    width: 100%;
-    height: 300px;
-    margin-top: 20px;
-}
-
-table {
-    width: 100%;
-    margin-top: 20px;
-    border-collapse: collapse;
-    text-align: left;
-    max-height: 300px;
-    overflow-y: auto;
-    display: block;
-}
-
-table, th, td {
-    border: 1px solid #ddd;
-}
-
-th, td {
-    padding: 12px;
-}
-
-th {
-    background-color: #f2f2f2;
-    color: #333;
-}
-
-td {
-    background-color: #fafafa;
-    cursor: pointer;
-}
-
-.clear-button {
-    background-color: #f44336;
-    color: white;
-    font-size: 18px;
-    margin: 20px auto;
-    display: block;
-    padding: 12px 30px;
-    border: none;
-    cursor: pointer;
-}
-
-.clear-button:hover {
-    background-color: #e53935;
-}
+        .section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .section input, .section textarea, .section button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .section button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .section button:hover {
+            background-color: #45a049;
+        }
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+        }
+       /* Adicionando barra de rolagem para as tabelas */
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        text-align: left;
+        max-height: 300px; /* Define a altura máxima */
+        overflow-y: auto; /* Adiciona a barra de rolagem vertical */
+        display: block; /* Necessário para que o overflow funcione */
+    }
+    table, th, td {
+        border: 1px solid #ddd;
+    }
+    th, td {
+        padding: 12px;
+    }
+    th {
+        background-color: #f2f2f2;
+        color: #333;
+    }
+    td {
+        background-color: #fafafa;
+        cursor: pointer;
+    }
+        .clear-button {
+            background-color: #f44336;
+            color: white;
+            font-size: 18px;
+            margin: 20px auto;
+            display: block;
+            padding: 12px 30px;
+            border: none;
+            cursor: pointer;
+        }
+        .clear-button:hover {
+            background-color: #e53935;
+        }
         /* Estilos de gráficos e tabelas */
         .chart-container {
             width: 100%;
