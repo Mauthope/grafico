@@ -358,37 +358,40 @@
         }
     }
 
-    function atualizarTabela(secao) {
-        const tabela = document.getElementById(`tabelaAcoes${secao}`);
-        const tbody = tabela.querySelector('tbody');
-        tbody.innerHTML = '';
+  function atualizarTabela(secao) {
+    const tabela = document.getElementById(`tabelaAcoes${secao}`);
+    const tbody = tabela.querySelector('tbody');
+    tbody.innerHTML = '';
 
-        // Filtra os dados para exibir apenas os que possuem algo no campo "acao"
-        const dadosFiltrados = dados[secao - 1].filter(item => item.acoes && item.acoes.trim() !== '');
+    // Filtra os dados para exibir apenas os que possuem algo no campo "acao"
+    const dadosFiltrados = dados[secao - 1].filter(item => item.acoes && item.acoes.trim() !== '');
 
-        dadosFiltrados.forEach((item, index) => {
-            const status = acoesTaxadas[secao - 1][index] ? 'Concluído' : 'Em andamento';
-            const buttonStyle = acoesTaxadas[secao - 1][index]
-                ? 'background-color: green; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;'
-                : 'background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;';
+    // Calcula a largura do gráfico para limitar a última coluna
+    const larguraGrafico = document.getElementById(`chart${secao * 2 - 1}`).offsetWidth;
 
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${item.data}</td>
-                <td>${item.eficiencia}</td>
-                <td>${item.residuo}</td>
-                <td>
-                    <span style="${acoesTaxadas[secao - 1][index] ? 'text-decoration: line-through;' : ''}">
-                        ${item.acoes}
-                    </span>
-                    <button style="${buttonStyle}" onclick="tacharAcao(${secao}, ${index})">
-                        Ação ${status}
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
+    dadosFiltrados.forEach((item, index) => {
+        const status = acoesTaxadas[secao - 1][index] ? 'Concluído' : 'Em andamento';
+        const buttonStyle = acoesTaxadas[secao - 1][index]
+            ? 'background-color: green; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;'
+            : 'background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${item.data}</td>
+            <td>${item.eficiencia}</td>
+            <td>${item.residuo}</td>
+            <td style="max-width: ${larguraGrafico}px; overflow: hidden; text-overflow: ellipsis;">
+                <span style="${acoesTaxadas[secao - 1][index] ? 'text-decoration: line-through;' : ''}">
+                    ${item.acoes}
+                </span>
+                <button style="${buttonStyle}" onclick="tacharAcao(${secao}, ${index})">
+                    Ação ${status}
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
 
     function tacharAcao(secao, index) {
         const acoes = acoesTaxadas[secao - 1];
