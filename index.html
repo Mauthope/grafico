@@ -393,6 +393,36 @@
         // Gráfico deve incluir todos os dados, mesmo aqueles sem "acao" preenchido
         const eficiencia = dados[secao - 1].map(item => item.eficiencia);
         const residuo = dados[secao - 1].map(item => item.residuo);
+ // Plugin para linhas fixas
+    const linePlugin = {
+        id: 'horizontalLine',
+        beforeDraw: (chart) => {
+            const { ctx, chartArea: { top, bottom, left, right }, scales: { y } } = chart;
+            ctx.save();
+
+            // Configuração da linha (eficiência)
+            if (chart.canvas.id.includes('chart' + (secao * 2 - 1))) {
+                ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(left, y.getPixelForValue(55));
+                ctx.lineTo(right, y.getPixelForValue(55));
+                ctx.stroke();
+            }
+
+            // Configuração da linha (resíduo)
+            if (chart.canvas.id.includes('chart' + (secao * 2))) {
+                ctx.strokeStyle = 'rgba(0, 0, 255, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(left, y.getPixelForValue(2.5));
+                ctx.lineTo(right, y.getPixelForValue(2.5));
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+    };
 
         // Gráfico de Eficiência
         new Chart(ctx1, {
