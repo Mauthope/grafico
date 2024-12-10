@@ -386,85 +386,96 @@
         atualizarTabela(secao);
     }
 
-    function gerarGrafico(secao) {
-        const ctx1 = document.getElementById(`chart${secao * 2 - 1}`).getContext('2d');
-        const ctx2 = document.getElementById(`chart${secao * 2}`).getContext('2d');
+   function gerarGrafico(secao) {
+    const ctx1 = document.getElementById(`chart${secao * 2 - 1}`).getContext('2d');
+    const ctx2 = document.getElementById(`chart${secao * 2}`).getContext('2d');
 
-        // Gráfico deve incluir todos os dados, mesmo aqueles sem "acao" preenchido
-        const eficiencia = dados[secao - 1].map(item => item.eficiencia);
-        const residuo = dados[secao - 1].map(item => item.residuo);
- // Plugin para linhas fixas
-    const linePlugin = {
-        id: 'horizontalLine',
-        beforeDraw: (chart) => {
-            const { ctx, chartArea: { top, bottom, left, right }, scales: { y } } = chart;
-            ctx.save();
+    const eficiencia = dados[secao - 1].map(item => item.eficiencia);
+    const residuo = dados[secao - 1].map(item => item.residuo);
 
-            // Configuração da linha (eficiência)
-            if (chart.canvas.id.includes('chart' + (secao * 2 - 1))) {
-                ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
-                ctx.lineWidth = 2;
+    // Plugin para desenhar linhas horizontais
+    const linhaFixaPlugin = {
+        id: 'linhaFixa',
+        afterDraw(chart) {
+            const { ctx, scales } = chart;
+            const yScale = scales.y;
+
+            // Verifica se é o gráfico de eficiência
+            if (chart.canvas.id.includes('chart1')) {
+                const yValue = yScale.getPixelForValue(55); // Valor fixo para eficiência
                 ctx.beginPath();
-                ctx.moveTo(left, y.getPixelForValue(55));
-                ctx.lineTo(right, y.getPixelForValue(55));
+                ctx.moveTo(scales.x.left, yValue);
+                ctx.lineTo(scales.x.right, yValue);
+                ctx.strokeStyle = 'rgba(0, 0, 255, 0.75)'; // Cor azul
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
+                ctx.closePath();
             }
 
-            // Configuração da linha (resíduo)
-            if (chart.canvas.id.includes('chart' + (secao * 2))) {
-                ctx.strokeStyle = 'rgba(0, 0, 255, 0.8)';
-                ctx.lineWidth = 2;
+            // Verifica se é o gráfico de resíduo
+            if (chart.canvas.id.includes('chart2')) {
+                const yValue = yScale.getPixelForValue(2.5); // Valor fixo para resíduo
                 ctx.beginPath();
-                ctx.moveTo(left, y.getPixelForValue(2.5));
-                ctx.lineTo(right, y.getPixelForValue(2.5));
+                ctx.moveTo(scales.x.left, yValue);
+                ctx.lineTo(scales.x.right, yValue);
+                ctx.strokeStyle = 'rgba(255, 165, 0, 0.75)'; // Cor laranja
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
+                ctx.closePath();
             }
-
-            ctx.restore();
         }
     };
 
-        // Gráfico de Eficiência
-        new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: dados[secao - 1].map(item => item.data),
-                datasets: [{
-                    label: 'Eficiência',
-                    data: eficiencia,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
+    // Gráfico de Eficiência
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: dados[secao - 1].map(item => item.data),
+            datasets: [{
+                label: 'Eficiência',
+                data: eficiencia,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
             },
-            options: {
-                responsive: true,
-                scales: {
-                    y: { beginAtZero: true }
-                }
+            plugins: {
+                legend: { display: true }
             }
-        });
+        },
+        plugins: [linhaFixaPlugin]
+    });
 
-        // Gráfico de Resíduo
-        new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: dados[secao - 1].map(item => item.data),
-                datasets: [{
-                    label: 'Resíduo',
-                    data: residuo,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }]
+    // Gráfico de Resíduo
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: dados[secao - 1].map(item => item.data),
+            datasets: [{
+                label: 'Resíduo',
+                data: residuo,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
             },
-            options: {
-                responsive: true,
-                scales: {
-                    y: { beginAtZero: true }
-                }
+            plugins: {
+                legend: { display: true }
             }
-        });
+        },
+        plugins: [linhaFixaPlugin]
+    });
+}
 
         // Exibir a média
         const mediaEficiencia = (eficiencia.reduce((a, b) => a + b, 0) / eficiencia.length).toFixed(2);
